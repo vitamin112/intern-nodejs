@@ -15,7 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 render(app, {
-  root: `${__dirname}/view`,
+  root: `${__dirname}/views`,
   layout: false,
   viewExt: "html",
   cache: false,

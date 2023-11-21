@@ -1,7 +1,7 @@
 import Router from "koa-router";
 import productHandler from "../handlers/products/productHandlers.js";
-import { productUpdateValidMiddleware } from "../middleware/productUpdateValidMiddleware.js";
-import { productValidMiddleware } from "../middleware/productValidMidleware.js";
+import { productUpdateValidMiddleware } from "../middlewares/productUpdateValidMiddleware.js";
+import { productValidMiddleware } from "../middlewares/productValidMidleware.js";
 
 const router = new Router({ prefix: "/api" });
 
