@@ -2,7 +2,7 @@ import yup from "yup";
 
 export const productValidMiddleware = async (ctx, next) => {
   try {
-    const rawData = ctx.request.body;
+    const rawData = await ctx.request.body;
 
     let schema = yup.object().shape({
       id: yup.string().required(),
@@ -16,7 +16,8 @@ export const productValidMiddleware = async (ctx, next) => {
     });
 
     await schema.validate(rawData);
-    next();
+
+    await next();
   } catch (e) {
     console.log(e);
     return (ctx.body = {

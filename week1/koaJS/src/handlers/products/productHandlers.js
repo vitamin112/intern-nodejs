@@ -1,27 +1,19 @@
-import {
-  addNewOne,
-  delProduct,
-  getAll,
-  getOne,
-  updProduct,
-} from "../../database/productRepository.js";
+import productRepository from "../../database/productRepository.js";
 
 const getAllProduct = async (ctx) => {
   try {
     const { limit } = ctx.request.query;
     const { sort } = ctx.request.query;
 
-    const products = await getAll(limit, sort);
+    const products = await productRepository.getAll(limit, sort);
 
-    ctx.status = 200;
     ctx.body = {
       data: products,
     };
   } catch (error) {
-    ctx.status = 500;
+    console.log(error);
     ctx.body = {
       success: false,
-      data: [],
       message: error.message,
     };
   }
@@ -33,7 +25,7 @@ const getById = async (ctx) => {
     const { fields } = ctx.request.query;
     const fieldsArr = fields ? fields.split(",") : [];
 
-    const product = await getOne(id);
+    const product = await productRepository.getOne(id);
 
     let result = {};
     fieldsArr.forEach((key) => {
@@ -52,10 +44,9 @@ const getById = async (ctx) => {
       data: null,
     });
   } catch (error) {
-    ctx.status = 500;
+    console.log(error);
     return (ctx.body = {
       success: false,
-      data: [],
       message: error.message,
     });
   }
@@ -63,21 +54,18 @@ const getById = async (ctx) => {
 
 const addNewProduct = async (ctx) => {
   try {
-    const rawData = ctx.request.body;
+    const rawData = await ctx.request.body;
 
-    const products = await addNewOne(rawData);
-
-    if (products) {
-      return (ctx.body = {
-        data: products,
-      });
+    const product = await productRepository.addNewOne(rawData);
+    if (product) {
+      ctx.body = {
+        data: product,
+      };
     }
   } catch (error) {
     console.log(error);
-    ctx.status = 500;
     return (ctx.body = {
       success: false,
-      data: [],
       message: error.message,
     });
   }
@@ -86,22 +74,18 @@ const addNewProduct = async (ctx) => {
 const updateProduct = async (ctx) => {
   try {
     const { id } = ctx.params;
-    const rawData = ctx.request.body;
+    const rawData = await ctx.request.body;
 
-    const result = await updProduct(id, rawData);
+    const result = await productRepository.updProduct(id, rawData);
 
-    if (result) {
-      return (ctx.body = {
-        data: result,
-      });
-    }
+    return (ctx.body = {
+      data: result,
+    });
   } catch (error) {
     console.log(error);
 
-    ctx.status = 500;
     return (ctx.body = {
       success: false,
-      data: [],
       message: error.message,
     });
   }
@@ -111,7 +95,7 @@ const deleteProduct = async (ctx) => {
   try {
     const { id } = ctx.params;
 
-    const products = await delProduct(id);
+    const products = await productRepository.delProduct(id);
 
     if (products) {
       return (ctx.body = {
@@ -119,10 +103,10 @@ const deleteProduct = async (ctx) => {
       });
     }
   } catch (error) {
-    ctx.status = 500;
+    console.log(error);
+
     return (ctx.body = {
       success: false,
-      data: [],
       message: error.message,
     });
   }

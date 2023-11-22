@@ -16,7 +16,7 @@ export const productUpdateValidMiddleware = async (ctx, next) => {
     });
 
     await schema.validate(rawData);
-    next();
+    await next();
   } catch (e) {
     return (ctx.body = {
       error: e.error,

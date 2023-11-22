@@ -1,9 +1,25 @@
 import fs from "fs";
 import { readFile } from "fs/promises";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 
-let products = JSON.parse(await readFile("src/database/product.json", "utf8"));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-export const getAll = (limit, sort) => {
+const products = JSON.parse(
+  await readFile(__dirname + "/product.json", "utf8")
+);
+
+const writeDB = (newData) => {
+  fs.writeFileSync(
+    __dirname + "/product.json",
+    JSON.stringify({
+      data: newData,
+    })
+  );
+};
+
+const getAll = (limit, sort) => {
   let productsList = products.data;
 
   if (limit) {
@@ -11,79 +27,52 @@ export const getAll = (limit, sort) => {
   }
 
   if (sort === "desc") {
-    productsList = productsList.sort((a, b) => {
-      if (a["createdAt"] > b["createdAt"]) {
-        return -1;
-      }
-      if (a["createdAt"] < b["createdAt"]) {
-        return 1;
-      }
-      return 0;
-    });
-  } else {
-    productsList = productsList.sort((a, b) => {
-      if (a["createdAt"] < b["createdAt"]) {
-        return -1;
-      }
-      if (a["createdAt"] > b["createdAt"]) {
-        return 1;
-      }
-      return 0;
-    });
+    return (productsList = productsList.sort((a, b) =>
+      a["createdAt"] > b["createdAt"] ? -1 : 1
+    ));
   }
-
-  return productsList;
+  return (productsList = productsList.sort((a, b) =>
+    a["createdAt"] < b["createdAt"] ? -1 : 1
+  ));
 };
 
-export const getOne = (id) => {
+const getOne = (id) => {
   const product = products.data.find((p) => p.id === id);
+
+  if (!product) {
+    throw new Error("Product not found!");
+  }
 
   return product;
 };
 
-export const addNewOne = (rawData) => {
-  let newProducts = [...products.data, rawData];
+const addNewOne = async (rawData) => {
+  const newProducts = await [...products.data, rawData];
 
-  fs.writeFileSync(
-    "./src/database/product.json",
-    JSON.stringify({
-      data: newProducts,
-    })
-  );
+  await writeDB(newProducts);
+
+  return rawData;
+};
+
+const delProduct = async (id) => {
+  let newProducts = await products.data.filter((product) => product.id !== id);
+
+  await writeDB(newProducts);
 
   return newProducts;
 };
 
-export const delProduct = (id) => {
-  let newProducts = products.data.filter((product) => product.id !== id);
-
-  fs.writeFileSync(
-    "./src/database/product.json",
-    JSON.stringify({
-      data: newProducts,
-    })
-  );
-
-  return newProducts;
-};
-
-export const updProduct = (id, newData) => {
-  let product = products.data.find((product) => product.id === id);
-
+const updProduct = async (id, newData) => {
+  let product = await products.data.find((product) => product.id === id);
   if (!product) {
     throw new Error("Product not found!");
   } else {
     let updatedProduct = { ...product, ...newData };
 
-    let updatedProducts = [...products.data, updatedProduct];
-
-    fs.writeFileSync(
-      "./src/database/product.json",
-      JSON.stringify({
-        data: updatedProducts,
-      })
-    );
+    await writeDB([...products.data, updatedProduct]);
 
     return updatedProduct;
   }
 };
+
+export default { getAll, getOne, addNewOne, delProduct, updProduct };
