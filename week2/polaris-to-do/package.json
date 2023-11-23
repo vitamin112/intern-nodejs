@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@shopify/polaris": "^5.1.0",
+    "@shopify/polaris": "^5.2.0",
     "@shopify/polaris-icons": "^4.20.0",
     "cra-template": "1.2.0",
     "react": "^16.9.0",

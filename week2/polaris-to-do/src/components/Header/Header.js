@@ -3,7 +3,9 @@ import React from "react";
 import "./Header.scss";
 
 const Header = () => {
-  const userMenuMarkup = <TopBar.UserMenu name="User name" initials="D" />;
+  const userMenuMarkup = (
+    <TopBar.UserMenu name="User name" avatar="/images/avatar.png" />
+  );
   return (
     <header>
       <Link url="/">
