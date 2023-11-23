@@ -7,6 +7,10 @@ async function getData(urlPath) {
   return await response.json();
 }
 
+async function writeData(fileName, data) {
+  await fs.writeFileSync(fileName, JSON.stringify(data));
+}
+
 async function callApi() {
   const [users, posts, comments] = await Promise.all([
     getData("users"),
@@ -17,19 +21,25 @@ async function callApi() {
   return { users, posts, comments };
 }
 
+function formatData(data, keys) {
+  return data.map((item) => {
+    delete item[key];
+
+    return item;
+  });
+}
+
 function getUseWithData(users, posts, comments) {
   return users.map((user) => {
     let userPosts = posts.filter((post) => post.userId === user.id);
-    userPosts = userPosts.map((post) => {
-      let { userId, ...rest } = post;
-      return { ...rest };
-    });
+    userPosts = formatData(userPosts, "userId");
 
-    const commentList = userPosts
+    let commentList = userPosts
       .map((post) => {
         return comments.filter((item) => item.postId === post.id);
       })
       .flat();
+    commentList = formatData(comments, "email");
 
     return {
       id: user.id,
@@ -131,26 +141,17 @@ async function getPost1() {
 
   const post1WithComments = await getPost1();
 
-  fs.writeFileSync("./userWithData.json", JSON.stringify(usersWithData));
+  writeData("./userWithData.json", usersWithData);
 
-  fs.writeFileSync("./reformat.json", JSON.stringify(reformatedUser));
+  writeData("./reformat.json", reformatedUser);
 
-  fs.writeFileSync("./sortedUsers.json", JSON.stringify(sortedUsers));
+  writeData("./sortedUsers.json", sortedUsers);
 
-  fs.writeFileSync("./filteredUsers.json", JSON.stringify(filteredUsers));
+  writeData("./filteredUsers.json", filteredUsers);
 
-  fs.writeFileSync(
-    "./userWithMostPosts.json",
-    JSON.stringify(userWithMostPosts)
-  );
+  writeData("./userWithMostPosts.json", userWithMostPosts);
 
-  fs.writeFileSync(
-    "./userWithMostComments.json",
-    JSON.stringify(userWithMostComments)
-  );
+  writeData("./userWithMostComments.json", userWithMostComments);
 
-  fs.writeFileSync(
-    "./commentsForPost1.json",
-    JSON.stringify(post1WithComments)
-  );
+  writeData("./commentsForPost1.json", post1WithComments);
 })();
