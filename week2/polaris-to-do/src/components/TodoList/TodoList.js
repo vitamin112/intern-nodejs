@@ -1,9 +1,4 @@
-import {
-  Card,
-  DisplayText,
-  ResourceItem,
-  ResourceList,
-} from "@shopify/polaris";
+import { Card, ResourceItem, ResourceList } from "@shopify/polaris";
 import { useState } from "react";
 
 function TodoList() {
@@ -91,7 +86,7 @@ function TodoList() {
   );
 
   function renderItem(item, _, index) {
-    const { id, url, name, location } = item;
+    const { id, url, name } = item;
 
     return (
       <ResourceItem
@@ -100,10 +95,7 @@ function TodoList() {
         sortOrder={index}
         accessibilityLabel={`View details for ${name}`}
       >
-        <DisplayText variant="bodyMd" fontWeight="bold" as="h3">
-          {name}
-        </DisplayText>
-        <div>{location}</div>
+        <div>{name}</div>
       </ResourceItem>
     );
   }

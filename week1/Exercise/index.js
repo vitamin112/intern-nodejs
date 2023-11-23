@@ -17,8 +17,33 @@ async function callApi() {
   return { users, posts, comments };
 }
 
+function getUseWithData(users, posts, comments) {
+  return users.map((user) => {
+    let userPosts = posts.filter((post) => post.userId === user.id);
+    userPosts = userPosts.map((post) => {
+      let { userId, ...rest } = post;
+      return { ...rest };
+    });
+
+    const commentList = userPosts
+      .map((post) => {
+        return comments.filter((item) => item.postId === post.id);
+      })
+      .flat();
+
+    return {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      comments: commentList,
+      posts: userPosts,
+    };
+  });
+}
+
 function reformatUser(users, posts, comments) {
-  const usersWithData = users.map((user) => {
+  return users.map((user) => {
     let userPosts = posts.filter((post) => post.userId === user.id);
 
     let commentList = [];
@@ -42,6 +67,7 @@ function reformatUser(users, posts, comments) {
       let { userId, ...rest } = post;
       return { ...rest };
     });
+
     return {
       id: user.id,
       name: user.name,
@@ -53,8 +79,6 @@ function reformatUser(users, posts, comments) {
       posts: userPosts,
     };
   });
-
-  return usersWithData;
 }
 
 function filterUser(users) {
@@ -78,15 +102,13 @@ async function getPost1() {
       getData("comments?postId=1"),
     ]);
 
-    const post1WithComments = {
+    return {
       userId: post1.userId,
       id: post1.id,
       title: post1.title,
       body: post1.body,
       comments: commentsForPost1,
     };
-
-    return post1WithComments;
   } catch (error) {
     console.error("Error: ", error);
   }
@@ -95,7 +117,9 @@ async function getPost1() {
 (async () => {
   let { users, posts, comments } = await callApi();
 
-  const usersWithData = reformatUser(users, posts, comments);
+  const usersWithData = getUseWithData(users, posts, comments);
+
+  const reformatedUser = reformatUser(users, posts, comments);
 
   let filteredUsers = filterUser(usersWithData);
 
@@ -107,7 +131,9 @@ async function getPost1() {
 
   const post1WithComments = await getPost1();
 
-  fs.writeFileSync("./reformat.json", JSON.stringify(usersWithData));
+  fs.writeFileSync("./userWithData.json", JSON.stringify(usersWithData));
+
+  fs.writeFileSync("./reformat.json", JSON.stringify(reformatedUser));
 
   fs.writeFileSync("./sortedUsers.json", JSON.stringify(sortedUsers));
 
