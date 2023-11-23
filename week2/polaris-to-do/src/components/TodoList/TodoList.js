@@ -11,13 +11,7 @@ import "./TodoList.scss";
 
 function TodoList() {
   const [selectedItems, setSelectedItems] = useState([]);
-
-  const resourceName = {
-    singular: "todoes",
-    plural: "todoes",
-  };
-
-  const items = [
+  const [items, setItems] = useState([
     {
       id: 111,
       todo: "Note Why Each To-Do on Your List Is Important.",
@@ -48,7 +42,12 @@ function TodoList() {
       todo: "Make Your To-Do List Public.",
       isComplete: false,
     },
-  ];
+  ]);
+
+  const resourceName = {
+    singular: "todoes",
+    plural: "todoes",
+  };
 
   const promotedBulkActions = [
     {
@@ -60,6 +59,22 @@ function TodoList() {
       onAction: () => console.log("Todo: implement bulk remove"),
     },
   ];
+
+  const handleComplete = (id) => {
+    setItems(
+      items.map((item) =>
+        item.id === id ? { ...item, isComplete: true } : item
+      )
+    );
+  };
+
+  const handleAdd = (item) => {
+    setItems([...items, item]);
+  };
+
+  const handleRemove = (id) => {
+    setItems(items.filter((item) => item.id !== id));
+  };
 
   function renderItem(item, _, index) {
     const { id, todo, isComplete } = item;
@@ -78,10 +93,10 @@ function TodoList() {
                 )}
               </Stack.Item>
               <Stack.Item>
-                <Button>Cancel</Button>
+                <Button onClick={() => handleRemove(id)}>Cancel</Button>
               </Stack.Item>
               <Stack.Item>
-                <Button>Save</Button>
+                <Button onClick={() => handleComplete(id)}>Save</Button>
               </Stack.Item>
             </Stack>
           </Stack.Item>
