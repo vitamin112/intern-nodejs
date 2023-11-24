@@ -80,6 +80,8 @@ function TodoList() {
             selectedItems.includes(item.id) ? false : true
           )
         );
+        setSelectedItems([]);
+        console.log(selectedItems);
       },
     },
   ];
