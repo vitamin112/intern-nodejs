@@ -7,14 +7,15 @@
     font-weight: 400;
     padding: 10px 16px;
   }
-  .Polaris-Badge {
-    margin: 0 auto;
-  }
+
   #createBtn {
     border-radius: 4px;
     color: #fff;
     background: var(--action-primary-default, #008060);
     box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.2) inset,
       0px 1px 0px 0px rgba(0, 0, 0, 0.08);
+  }
+  .Polaris-Badge--statusInfo {
+    margin: 0 8px !important;
   }
 }
