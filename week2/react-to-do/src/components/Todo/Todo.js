@@ -1,5 +1,6 @@
 import { useState } from "react";
 import TodoForm from "../TodoForm/TodoForm";
+import "./Todo.css";
 
 const Todo = () => {
   const [todos, setTodos] = useState([
@@ -18,15 +19,15 @@ const Todo = () => {
   ]);
 
   const completeTodo = (index) => {
-    const newTodos = [...todos];
-    newTodos[index].isCompleted = true;
-    setTodos(newTodos);
+    setTodos((todos) => {
+      todos[index].isCompleted = true;
+      return [...todos];
+    });
   };
 
   const removeTodo = (index) => {
-    const newTodos = [...todos];
-    newTodos.splice(index, 1);
-    setTodos(newTodos);
+    todos.splice(index, 1);
+    setTodos([...todos]);
   };
 
   return (

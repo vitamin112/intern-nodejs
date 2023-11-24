@@ -2,15 +2,18 @@ import {
   Badge,
   Button,
   Card,
+  Modal,
   ResourceItem,
   ResourceList,
   Stack,
+  TextField,
 } from "@shopify/polaris";
 import { useState } from "react";
 import "./TodoList.scss";
 
 function TodoList() {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const [items, setItems] = useState([
     {
       id: 111,
@@ -113,6 +116,7 @@ function TodoList() {
     <div className="todoList">
       <Card>
         <p className="title">Todoes</p>
+        <Button onClick={() => setIsOpenModal(true)}>Add</Button>
         <ResourceList
           resourceName={resourceName}
           items={items}
@@ -124,6 +128,25 @@ function TodoList() {
           showHeader={true}
         />
       </Card>
+      <Modal
+        title={"Create a new todo"}
+        open={isOpenModal}
+        onClose={() => setIsOpenModal(false)}
+        primaryAction={{
+          content: "Create",
+          onAction: () => handleAdd({}),
+        }}
+        secondaryActions={[
+          {
+            content: "Cancel",
+            onAction: () => setIsOpenModal(false),
+          },
+        ]}
+      >
+        <Modal.Section>
+          <TextField></TextField>
+        </Modal.Section>
+      </Modal>
     </div>
   );
 }
