@@ -4,8 +4,7 @@ const TodoForm = ({ setTodos, todos }) => {
   const [value, setValue] = useState("");
 
   const addTodo = (text) => {
-    const newTodos = [...todos, { text, isCompleted: false }];
-    setTodos(newTodos);
+    setTodos((todos) => [...todos, { text, isCompleted: false }]);
   };
 
   const handleSubmit = (e) => {

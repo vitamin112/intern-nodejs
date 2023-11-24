@@ -2,15 +2,20 @@ import {
   Badge,
   Button,
   Card,
+  Modal,
   ResourceItem,
   ResourceList,
   Stack,
+  TextField,
+  ThemeProvider,
 } from "@shopify/polaris";
 import { useState } from "react";
 import "./TodoList.scss";
 
 function TodoList() {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [newTodo, setNewTodo] = useState("");
   const [items, setItems] = useState([
     {
       id: 111,
@@ -49,14 +54,33 @@ function TodoList() {
     plural: "todoes",
   };
 
+  const colorConfig = {
+    colors: { primary: "#cccccc" },
+  };
+
   const promotedBulkActions = [
     {
       content: "Completed",
-      onAction: () => console.log("Todo: implement bulk completed"),
+      onAction: () => {
+        setItems((items) =>
+          items.map((item) => {
+            if (selectedItems.includes(item.id)) {
+              return { ...item, isComplete: true };
+            }
+            return item;
+          })
+        );
+      },
     },
     {
       content: "Removed",
-      onAction: () => console.log("Todo: implement bulk remove"),
+      onAction: () => {
+        setItems((items) =>
+          items.filter((item) =>
+            selectedItems.includes(item.id) ? false : true
+          )
+        );
+      },
     },
   ];
 
@@ -68,8 +92,16 @@ function TodoList() {
     );
   };
 
-  const handleAdd = (item) => {
-    setItems([...items, item]);
+  const handleAdd = (value) => {
+    setItems([
+      ...items,
+      {
+        todo: value,
+        isComplete: false,
+        id: Math.floor(Math.random() * 10000 + 0),
+      },
+    ]);
+    setNewTodo("");
   };
 
   const handleRemove = (id) => {
@@ -84,7 +116,7 @@ function TodoList() {
           <Stack.Item>{todo}</Stack.Item>
 
           <Stack.Item>
-            <Stack alignment={"center"}>
+            <Stack alignment={"center"} distribution={"center"}>
               <Stack.Item>
                 {isComplete ? (
                   <Badge status="info">Done</Badge>
@@ -93,10 +125,12 @@ function TodoList() {
                 )}
               </Stack.Item>
               <Stack.Item>
-                <Button onClick={() => handleRemove(id)}>Cancel</Button>
+                <Button onClick={() => handleComplete(id)}>Complete</Button>
               </Stack.Item>
               <Stack.Item>
-                <Button onClick={() => handleComplete(id)}>Save</Button>
+                <Button destructive onClick={() => handleRemove(id)}>
+                  Delete
+                </Button>
               </Stack.Item>
             </Stack>
           </Stack.Item>
@@ -109,22 +143,65 @@ function TodoList() {
     return id;
   }
 
+  const modalFooterMakeup = () => {
+    return (
+      <Stack distribution="trailing">
+        <Button>Cancel</Button>
+        <Button
+          primary
+          onClick={() => {
+            handleAdd(newTodo);
+            setIsOpenModal(false);
+          }}
+        >
+          Add
+        </Button>
+      </Stack>
+    );
+  };
+
   return (
-    <div className="todoList">
+    <ThemeProvider
+      theme={{
+        colorConfig,
+      }}
+    >
       <Card>
-        <p className="title">Todoes</p>
-        <ResourceList
-          resourceName={resourceName}
-          items={items}
-          renderItem={renderItem}
-          selectedItems={selectedItems}
-          onSelectionChange={setSelectedItems}
-          promotedBulkActions={promotedBulkActions}
-          resolveItemId={resolveItemIds}
-          showHeader={true}
-        />
+        <div className="todoList">
+          <Stack alignment="center" distribution="equalSpacing">
+            <p className="title">Todoes</p>
+            <Button id="createBtn" onClick={() => setIsOpenModal(true)}>
+              Create todo
+            </Button>
+          </Stack>
+          <ResourceList
+            resourceName={resourceName}
+            items={items}
+            renderItem={renderItem}
+            selectedItems={selectedItems}
+            onSelectionChange={setSelectedItems}
+            promotedBulkActions={promotedBulkActions}
+            resolveItemId={resolveItemIds}
+            showHeader={true}
+          />
+        </div>
+        <ThemeProvider theme={{ colors: { primary: "red" } }}>
+          <Modal
+            title={"Create a new todo"}
+            open={isOpenModal}
+            onClose={() => setIsOpenModal(false)}
+            footer={modalFooterMakeup()}
+          >
+            <Modal.Section>
+              <TextField
+                value={newTodo}
+                onChange={(value) => setNewTodo(value)}
+              ></TextField>
+            </Modal.Section>
+          </Modal>
+        </ThemeProvider>
       </Card>
-    </div>
+    </ThemeProvider>
   );
 }
 
