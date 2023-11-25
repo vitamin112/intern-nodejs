@@ -8,7 +8,8 @@ import {
   Stack,
   TextField,
 } from "@shopify/polaris";
-import { useState } from "react";
+import { EnableSelectionMinor } from "@shopify/polaris-icons";
+import React, { useState } from "react";
 import "./TodoList.scss";
 
 function TodoList() {
@@ -55,21 +56,21 @@ function TodoList() {
 
   const promotedBulkActions = [
     {
-      content: "Completed",
-      onAction: () =>
-        setItems(
-          items.map((item) => {
-            if (selectedItems.includes(item.id)) {
-              item.isComplete = true;
-              return item;
-            }
-
-            return item;
-          })
-        ),
+      content: "Complete",
+      onAction: () => {
+        setItems((items) =>
+          items.map((item) =>
+            selectedItems.includes(item.id)
+              ? { ...item, isComplete: true }
+              : item
+          )
+        );
+        setSelectedItems([]);
+      },
     },
     {
-      content: "Removed",
+      content: "Delete",
+
       onAction: () => {
         setItems((items) =>
           items.filter((item) =>
@@ -77,7 +78,6 @@ function TodoList() {
           )
         );
         setSelectedItems([]);
-        console.log(selectedItems);
       },
     },
   ];
@@ -106,8 +106,16 @@ function TodoList() {
     setItems(items.filter((item) => item.id !== id));
   };
 
+  const selectAllBtnMarkup = (
+    <Button
+      onClick={() => setSelectedItems(items.map((item) => item.id))}
+      icon={EnableSelectionMinor}
+    >
+      Select
+    </Button>
+  );
+
   function renderItem(item, _, index) {
-    console.log(item, _, index);
     const { id, todo, isComplete } = item;
 
     return (
@@ -146,7 +154,7 @@ function TodoList() {
   const modalFooterMakeup = () => {
     return (
       <Stack distribution="trailing">
-        <Button>Cancel</Button>
+        <Button onClick={() => setIsOpenModal(false)}>Cancel</Button>
         <Button
           primary
           onClick={() => {
@@ -169,6 +177,7 @@ function TodoList() {
             Create todo
           </Button>
         </Stack>
+
         <ResourceList
           resourceName={resourceName}
           items={items}
@@ -177,6 +186,7 @@ function TodoList() {
           onSelectionChange={setSelectedItems}
           promotedBulkActions={promotedBulkActions}
           resolveItemId={resolveItemIds}
+          alternateTool={selectAllBtnMarkup}
         />
       </div>
 

@@ -1,11 +1,15 @@
 .todoList {
   margin: 0 auto;
-  max-width: 900px;
+  max-width: 800px;
   padding: 10px;
   .title {
+    color: #000;
+    font-feature-settings: "clig" off, "liga" off;
+    font-family: Arial;
     font-size: 20px;
+    font-style: normal;
     font-weight: 400;
-    padding: 10px 16px;
+    line-height: 32px;
   }
 
   #createBtn {
@@ -18,4 +22,30 @@
   .Polaris-Badge--statusInfo {
     margin: 0 8px !important;
   }
+  .Polaris-ButtonGroup--segmented {
+    gap: 10px !important;
+  }
+}
+.Polaris-ResourceList__SelectButtonWrapper {
+  display: none;
+}
+.Polaris-ResourceList-CheckableButton.Polaris-ResourceList-CheckableButton__CheckableButton--selected {
+  border-color: transparent;
+}
+
+[data-buttongroup-segmented="true"] .Polaris-Button {
+  border-radius: 4px;
+}
+
+.Polaris-ResourceList-BulkActions__ButtonGroupWrapper {
+  padding: 10px;
+}
+#PolarisCheckbox1 {
+  display: none;
+}
+
+.Polaris-ButtonGroup__Item:last-child button {
+  background: #d82c0d;
+  color: #fff;
+  border-radius: 4px;
 }
