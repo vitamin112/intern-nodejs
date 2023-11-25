@@ -2,52 +2,52 @@ import {
   Badge,
   Button,
   Card,
-  Modal,
   ResourceItem,
   ResourceList,
   Stack,
-  TextField,
 } from "@shopify/polaris";
 import { EnableSelectionMinor } from "@shopify/polaris-icons";
 import React, { useState } from "react";
+import ModalAdd from "../Modal/Modal";
 import "./TodoList.scss";
+
+const initTodoes = [
+  {
+    id: 111,
+    todo: "Note Why Each To-Do on Your List Is Important.",
+    isComplete: false,
+  },
+  {
+    id: 211,
+    todo: "Delete Low/No-Value Tasks and Nice-To-Dos",
+    isComplete: true,
+  },
+  {
+    id: 311,
+    todo: "Create a To-Do List for Each Week or Each Day",
+    isComplete: false,
+  },
+  {
+    id: 411,
+    todo: "Break Large To-Dos Down Into Smaller To-Dos",
+    isComplete: false,
+  },
+  {
+    id: 511,
+    todo: "Write a “What I'll Probably Do” List.",
+    isComplete: false,
+  },
+  {
+    id: 611,
+    todo: "Make Your To-Do List Public.",
+    isComplete: false,
+  },
+];
 
 function TodoList() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [newTodo, setNewTodo] = useState("");
-  const [items, setItems] = useState([
-    {
-      id: 111,
-      todo: "Note Why Each To-Do on Your List Is Important.",
-      isComplete: false,
-    },
-    {
-      id: 211,
-      todo: "Delete Low/No-Value Tasks and Nice-To-Dos",
-      isComplete: true,
-    },
-    {
-      id: 311,
-      todo: "Create a To-Do List for Each Week or Each Day",
-      isComplete: false,
-    },
-    {
-      id: 411,
-      todo: "Break Large To-Dos Down Into Smaller To-Dos",
-      isComplete: false,
-    },
-    {
-      id: 511,
-      todo: "Write a “What I'll Probably Do” List.",
-      isComplete: false,
-    },
-    {
-      id: 611,
-      todo: "Make Your To-Do List Public.",
-      isComplete: false,
-    },
-  ]);
+  const [todoes, setTodoes] = useState(initTodoes);
 
   const resourceName = {
     singular: "todoes",
@@ -58,8 +58,8 @@ function TodoList() {
     {
       content: "Complete",
       onAction: () => {
-        setItems((items) =>
-          items.map((item) =>
+        setTodoes((todoes) =>
+          todoes.map((item) =>
             selectedItems.includes(item.id)
               ? { ...item, isComplete: true }
               : item
@@ -70,10 +70,9 @@ function TodoList() {
     },
     {
       content: "Delete",
-
       onAction: () => {
-        setItems((items) =>
-          items.filter((item) =>
+        setTodoes((todoes) =>
+          todoes.filter((item) =>
             selectedItems.includes(item.id) ? false : true
           )
         );
@@ -83,32 +82,20 @@ function TodoList() {
   ];
 
   const handleComplete = (id) => {
-    setItems(
-      items.map((item) =>
+    setTodoes(
+      todoes.map((item) =>
         item.id === id ? { ...item, isComplete: true } : item
       )
     );
   };
 
-  const handleAdd = (value) => {
-    setItems([
-      ...items,
-      {
-        todo: value,
-        isComplete: false,
-        id: Math.floor(Math.random() * 10000 + 0),
-      },
-    ]);
-    setNewTodo("");
-  };
-
   const handleRemove = (id) => {
-    setItems(items.filter((item) => item.id !== id));
+    setTodoes(todoes.filter((item) => item.id !== id));
   };
 
   const selectAllBtnMarkup = (
     <Button
-      onClick={() => setSelectedItems(items.map((item) => item.id))}
+      onClick={() => setSelectedItems(todoes.map((item) => item.id))}
       icon={EnableSelectionMinor}
     >
       Select
@@ -151,36 +138,19 @@ function TodoList() {
     return id;
   }
 
-  const modalFooterMakeup = () => {
-    return (
-      <Stack distribution="trailing">
-        <Button onClick={() => setIsOpenModal(false)}>Cancel</Button>
-        <Button
-          primary
-          onClick={() => {
-            handleAdd(newTodo);
-            setIsOpenModal(false);
-          }}
-        >
-          Create
-        </Button>
-      </Stack>
-    );
-  };
-
   return (
     <Card>
       <div className="todoList">
         <Stack alignment="center" distribution="equalSpacing">
           <p className="title">Todoes</p>
-          <Button id="createBtn" onClick={() => setIsOpenModal(true)}>
+          <Button primary onClick={() => setIsOpenModal(true)}>
             Create todo
           </Button>
         </Stack>
 
         <ResourceList
           resourceName={resourceName}
-          items={items}
+          items={todoes}
           renderItem={renderItem}
           selectedItems={selectedItems}
           onSelectionChange={setSelectedItems}
@@ -190,19 +160,12 @@ function TodoList() {
         />
       </div>
 
-      <Modal
-        title={"Create a new todo"}
-        open={isOpenModal}
-        onClose={() => setIsOpenModal(false)}
-        footer={modalFooterMakeup()}
-      >
-        <Modal.Section>
-          <TextField
-            value={newTodo}
-            onChange={(value) => setNewTodo(value)}
-          ></TextField>
-        </Modal.Section>
-      </Modal>
+      <ModalAdd
+        isOpenModal={isOpenModal}
+        setIsOpenModal={setIsOpenModal}
+        todoes={todoes}
+        setTodoes={setTodoes}
+      />
     </Card>
   );
 }

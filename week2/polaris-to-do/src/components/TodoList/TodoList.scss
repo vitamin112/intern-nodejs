@@ -33,15 +33,8 @@
   border-color: transparent;
 }
 
-[data-buttongroup-segmented="true"] .Polaris-Button {
+.Polaris-Button {
   border-radius: 4px;
-}
-
-.Polaris-ResourceList-BulkActions__ButtonGroupWrapper {
-  padding: 10px;
-}
-#PolarisCheckbox1 {
-  display: none;
 }
 
 .Polaris-ButtonGroup__Item:last-child button {
