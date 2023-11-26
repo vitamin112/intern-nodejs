@@ -120,7 +120,12 @@ function TodoList() {
                 )}
               </Stack.Item>
               <Stack.Item>
-                <Button onClick={() => handleComplete(id)}>Complete</Button>
+                <Button
+                  disabled={isComplete}
+                  onClick={() => handleComplete(id)}
+                >
+                  Complete
+                </Button>
               </Stack.Item>
               <Stack.Item>
                 <Button destructive onClick={() => handleRemove(id)}>
