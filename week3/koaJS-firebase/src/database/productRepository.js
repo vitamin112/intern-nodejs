@@ -57,7 +57,7 @@ const getOne = async (id) => {
 
 const addNewOne = async (rawData) => {
   try {
-    const res = await productRef.add(rawData);
+    await productRef.add(rawData);
     return rawData;
   } catch (error) {
     console.log(error);
@@ -70,6 +70,7 @@ const delProduct = async (id) => {
   try {
     const product = await productRef.doc(id);
     await product.delete();
+
     return "success";
   } catch (error) {
     console.log(error);
