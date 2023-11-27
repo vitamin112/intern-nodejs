@@ -1,14 +1,14 @@
-import productRepository from "../../database/productRepository.js";
+import todoRepository from '../../database/todoRepository.js';
 
-const getAllProduct = async (ctx) => {
+const getAllTodo = async (ctx) => {
   try {
-    const { limit } = ctx.request.query;
-    const { sort } = ctx.request.query;
+    const {limit} = ctx.request.query;
+    const {sort} = ctx.request.query;
 
-    const products = await productRepository.getAll(limit, sort);
+    const todos = await todoRepository.getAll(limit, sort);
 
     ctx.body = {
-      data: products,
+      data: todos,
     };
   } catch (error) {
     console.log(error);
@@ -21,26 +21,26 @@ const getAllProduct = async (ctx) => {
 
 const getById = async (ctx) => {
   try {
-    const { id } = ctx.params;
-    const { fields } = ctx.request.query;
-    const fieldsArr = fields ? fields.split(",") : [];
+    const {id} = ctx.params;
+    const {fields} = ctx.request.query;
+    const fieldsArr = fields ? fields.split(',') : [];
 
-    const product = await productRepository.getOne(id);
+    const todo = await todoRepository.getOne(id);
 
     let result = {};
     fieldsArr.forEach((key) => {
-      result[key] = product[key];
+      result[key] = todo[key];
     });
 
-    if (product) {
+    if (todo) {
       return (ctx.body = {
-        data: fields ? result : product,
+        data: fields ? result : todo,
       });
     }
 
     return (ctx.body = {
       success: false,
-      message: "can't find product with id " + id,
+      message: "can't find todo with id " + id,
       data: null,
     });
   } catch (error) {
@@ -52,14 +52,14 @@ const getById = async (ctx) => {
   }
 };
 
-const addNewProduct = async (ctx) => {
+const addNewTodo = async (ctx) => {
   try {
     const rawData = await ctx.request.body;
 
-    const product = await productRepository.addNewOne(rawData);
-    if (product) {
+    const todo = await todoRepository.addNewOne(rawData);
+    if (todo) {
       ctx.body = {
-        data: product,
+        data: todo,
       };
     }
   } catch (error) {
@@ -71,12 +71,12 @@ const addNewProduct = async (ctx) => {
   }
 };
 
-const updateProduct = async (ctx) => {
+const updateTodo = async (ctx) => {
   try {
-    const { id } = ctx.params;
+    const {id} = ctx.params;
     const rawData = await ctx.request.body;
 
-    const result = await productRepository.updProduct(id, rawData);
+    const result = await todoRepository.updTodo(id, rawData);
 
     return (ctx.body = {
       data: result,
@@ -91,15 +91,15 @@ const updateProduct = async (ctx) => {
   }
 };
 
-const deleteProduct = async (ctx) => {
+const deleteTodo = async (ctx) => {
   try {
-    const { id } = ctx.params;
+    const {id} = ctx.params;
 
-    const products = await productRepository.delProduct(id);
+    const todos = await todoRepository.delTodo(id);
 
-    if (products) {
+    if (todos) {
       return (ctx.body = {
-        data: products,
+        data: 'success',
       });
     }
   } catch (error) {
@@ -113,9 +113,9 @@ const deleteProduct = async (ctx) => {
 };
 
 export default {
-  getAllProduct,
+  getAllTodo,
   getById,
-  addNewProduct,
-  updateProduct,
-  deleteProduct,
+  addNewTodo,
+  updateTodo,
+  deleteTodo,
 };

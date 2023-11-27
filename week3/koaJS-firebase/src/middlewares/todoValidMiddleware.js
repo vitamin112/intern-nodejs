@@ -1,6 +1,6 @@
 import yup from "yup";
 
-export const productValidMiddleware = async (ctx, next) => {
+export const todoValidMiddleware = async (ctx, next) => {
   try {
     const rawData = await ctx.request.body;
 

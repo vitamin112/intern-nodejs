@@ -1,6 +1,6 @@
 import yup from "yup";
 
-export const productUpdateValidMiddleware = async (ctx, next) => {
+export const todoUpdateValidMiddleware = async (ctx, next) => {
   try {
     const rawData = ctx.request.body;
 

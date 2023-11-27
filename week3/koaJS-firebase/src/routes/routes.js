@@ -1,22 +1,18 @@
 import Router from "koa-router";
-import productHandler from "../handlers/products/productHandlers.js";
-import { productUpdateValidMiddleware } from "../middlewares/productUpdateValidMiddleware.js";
-import { productValidMiddleware } from "../middlewares/productValidMidleware.js";
+import todoHandler from "../handlers/todoes/todoHandlers.js";
+import { todoUpdateValidMiddleware } from "../middlewares/todoUpdateValidMiddleware.js";
+import { todoValidMiddleware } from "../middlewares/todoValidMiddleware.js";
 
 const router = new Router({ prefix: "/api" });
 
-router.get("/products", productHandler.getAllProduct);
+router.get("/todo", todoHandler.getAllTodo);
 
-router.post("/products", productValidMiddleware, productHandler.addNewProduct);
+router.post("/todo", todoValidMiddleware, todoHandler.addNewTodo);
 
-router.get("/products/:id", productHandler.getById);
+router.get("/todo/:id", todoHandler.getById);
 
-router.put(
-  "/products/:id",
-  productUpdateValidMiddleware,
-  productHandler.updateProduct
-);
+router.put("/todo/:id", todoUpdateValidMiddleware, todoHandler.updateTodo);
 
-router.delete("/products/:id", productHandler.deleteProduct);
+router.delete("/todo/:id", todoHandler.deleteTodo);
 
 export const routes = router;
