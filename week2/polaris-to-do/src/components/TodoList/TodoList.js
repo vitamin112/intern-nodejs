@@ -2,12 +2,14 @@ import {
   Badge,
   Button,
   Card,
+  Page,
   ResourceItem,
   ResourceList,
   Stack,
 } from "@shopify/polaris";
 import { EnableSelectionMinor } from "@shopify/polaris-icons";
 import React, { useState } from "react";
+import useModal from "../../hooks/modal/useModal";
 import ModalAdd from "../Modal/Modal";
 import "./TodoList.scss";
 
@@ -46,8 +48,18 @@ const initTodoes = [
 
 function TodoList() {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [isOpenModal, setIsOpenModal] = useState(false);
   const [todoes, setTodoes] = useState(initTodoes);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { modal, openModal } = useModal({
+    items: todoes,
+    setOpen: setIsOpen,
+    open: isOpen,
+    setItems: setTodoes,
+    title: "Create a new todo",
+    content: <ModalAdd item={todoes} setItem={setTodoes} cb={setIsOpen} />,
+  });
 
   const resourceName = {
     singular: "todoes",
@@ -109,7 +121,6 @@ function TodoList() {
       <ResourceItem id={id} sortOrder={index}>
         <Stack distribution={"equalSpacing"}>
           <Stack.Item>{todo}</Stack.Item>
-
           <Stack.Item>
             <Stack alignment={"center"} distribution={"center"}>
               <Stack.Item>
@@ -144,15 +155,16 @@ function TodoList() {
   }
 
   return (
-    <Card>
-      <div className="todoList">
-        <Stack alignment="center" distribution="equalSpacing">
-          <p className="title">Todoes</p>
-          <Button primary onClick={() => setIsOpenModal(true)}>
-            Create todo
-          </Button>
-        </Stack>
-
+    <Page
+      title="Todoes"
+      primaryAction={{
+        content: "Create todo",
+        onAction: () => {
+          openModal();
+        },
+      }}
+    >
+      <Card>
         <ResourceList
           resourceName={resourceName}
           items={todoes}
@@ -163,15 +175,9 @@ function TodoList() {
           resolveItemId={resolveItemIds}
           alternateTool={selectAllBtnMarkup}
         />
-      </div>
-
-      <ModalAdd
-        isOpenModal={isOpenModal}
-        setIsOpenModal={setIsOpenModal}
-        todoes={todoes}
-        setTodoes={setTodoes}
-      />
-    </Card>
+      </Card>
+      {modal}
+    </Page>
   );
 }
 

@@ -1,52 +1,39 @@
 import { Button, Modal, Stack, TextField } from "@shopify/polaris";
 import { useState } from "react";
 
-const ModalAdd = ({ todoes, setTodoes, isOpenModal, setIsOpenModal }) => {
-  const [newTodo, setNewTodo] = useState("");
+const ModalAdd = ({ item, setItem, cb }) => {
+  const [value, setValue] = useState("");
 
-  const handleAdd = (value) => {
-    setTodoes([
-      ...todoes,
-      {
-        todo: value,
-        isComplete: false,
-        id: Math.floor(Math.random() * 10000 + 0),
-      },
-    ]);
-    setNewTodo("");
-  };
-
-  const modalFooterMakeup = () => {
-    return (
-      <Stack distribution="trailing">
-        <Button onClick={() => setIsOpenModal(false)}>Cancel</Button>
-        <Button
-          primary
-          onClick={() => {
-            handleAdd(newTodo);
-            setIsOpenModal(false);
-          }}
-        >
-          Create
-        </Button>
-      </Stack>
-    );
+  const ramdomID = () => {
+    return Math.floor(Math.random() * 10000);
   };
 
   return (
-    <Modal
-      title={"Create a new todo"}
-      open={isOpenModal}
-      onClose={() => setIsOpenModal(false)}
-      footer={modalFooterMakeup()}
-    >
+    <>
       <Modal.Section>
         <TextField
-          value={newTodo}
-          onChange={(value) => setNewTodo(value)}
+          value={value}
+          onChange={(value) => setValue(value)}
         ></TextField>
       </Modal.Section>
-    </Modal>
+      <Modal.Section>
+        <Stack distribution="trailing">
+          <Button onClick={() => cb(false)}>Cancel</Button>
+          <Button
+            primary
+            onClick={() => {
+              setItem([
+                ...item,
+                { id: ramdomID(), todo: value, isComplete: false },
+              ]);
+              cb(false);
+            }}
+          >
+            Create
+          </Button>
+        </Stack>
+      </Modal.Section>
+    </>
   );
 };
 
