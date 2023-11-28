@@ -6,6 +6,7 @@
     "@firebase/app": "^0.9.23",
     "@shopify/polaris": "^5.2.0",
     "@shopify/polaris-icons": "^4.20.0",
+    "axios": "^1.6.2",
     "cra-template": "1.2.0",
     "firebase": "^10.6.0",
     "firebase-admin": "9.5.0",

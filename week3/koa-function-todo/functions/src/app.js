@@ -1,10 +1,12 @@
 const Koa = require('koa');
-const {koaBody} = require('koa-body');
-const routes = require('./routes/app');
+const routes = require('./routes/routes');
+const cors = require('@koa/cors');
+const hybridBodyParser = require('./middlewares/bodyParseMiddleware');
 
 const app = new Koa();
 
-app.use(koaBody());
+app.use(hybridBodyParser());
+app.use(cors());
 app.use(routes.routes());
 app.use(routes.allowedMethods());
 

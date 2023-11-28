@@ -1,12 +1,6 @@
-const {doc, deleteDoc, updateDoc} = require('@firebase/firestore');
-const key = require('./key.json');
-const admin = require('firebase-admin');
+const app = require('./dbConfig.js');
 
-admin.initializeApp({
-  credential: admin.credential.cert(key),
-});
-
-const db = admin.firestore();
+const db = app.firestore();
 
 const getAll = async () => {
   try {
@@ -21,7 +15,7 @@ const getAll = async () => {
     });
   } catch (error) {
     console.log(error);
-    return null;
+    return 'something went wrong!';
   }
 };
 
@@ -39,48 +33,53 @@ const getOne = async (id) => {
     return null;
   } catch (error) {
     console.log(error);
-    return null;
+    return 'Something went wrong!';
   }
 };
 
-const addNewOne = async (rawData) => {
+const addNewOne = async ({todo}) => {
   try {
-    await db.collection('todoes').add(rawData);
-
-    // const todo = await todoRef.get();
+    console.log(todo);
+    const todoRef = await db
+      .collection('todoes')
+      .add({todo, isComplete: false});
 
     return {
-      // id: todo.id,
-      // ...todo.data(),
-      menubar: 'addNewOne',
+      id: todoRef.id,
+      todo,
+      isComplete: false,
     };
   } catch (error) {
     console.log(error);
-    return null;
+    return 'Something went wrong!';
   }
 };
 
 const delTodo = async (id) => {
   try {
-    const todoRef = await doc(db, 'todoes', id);
-    await deleteDoc(todoRef);
+    const todoRef = await db.collection('todoes').doc(id).delete();
+
+    if (todoRef) {
+      return id;
+    }
   } catch (error) {
     console.log(error);
     return null;
   }
 };
 
-const updTodo = async (id, newData) => {
+const updateTodo = async (id) => {
   try {
-    const todoRef = doc(db, 'todoes', id);
-
-    await updateDoc(todoRef, newData);
+    const todoRef = await db.collection('todoes').doc(id);
+    if (todoRef) {
+      await todoRef.update({isComplete: true});
+    }
 
     return 'success';
   } catch (error) {
     console.log(error);
-    return null;
+    return 'update failed';
   }
 };
 
-module.exports = {getAll, getOne, addNewOne, delTodo, updTodo};
+module.exports = {getAll, getOne, addNewOne, delTodo, updateTodo};

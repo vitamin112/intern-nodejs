@@ -1,8 +1,14 @@
-import { Button, Modal, Stack, TextField } from "@shopify/polaris";
-import { useState } from "react";
+import {Button, Modal, Stack, TextField} from '@shopify/polaris';
+import {useState} from 'react';
+import axios from '../../configs/axios';
 
-const ModalAdd = ({ item, setItem, cb }) => {
-  const [value, setValue] = useState("");
+const ModalAdd = ({item, setItem, cb}) => {
+  const [value, setValue] = useState('');
+
+  const handleCreate = async (todo) => {
+    const newTodo = await axios.post('/api/todo', {todo});
+    setItem([...item, newTodo.data]);
+  };
 
   return (
     <>
@@ -13,12 +19,12 @@ const ModalAdd = ({ item, setItem, cb }) => {
         ></TextField>
       </Modal.Section>
       <Modal.Section>
-        <Stack distribution="trailing">
+        <Stack distribution='trailing'>
           <Button onClick={() => cb(false)}>Cancel</Button>
           <Button
             primary
             onClick={() => {
-              setItem([...item, { todo: value, isComplete: false }]);
+              handleCreate(value);
               cb(false);
             }}
           >

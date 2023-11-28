@@ -8,9 +8,22 @@ module.exports = {
   },
   extends: ['eslint:recommended', 'google'],
   rules: {
+    'indent': 'off',
     'no-restricted-globals': ['error', 'name', 'length'],
     'prefer-arrow-callback': 'error',
     'quotes': ['error', 'single', {allowTemplateLiterals: true}],
+    'require-jsdoc': [
+      'error',
+      {
+        require: {
+          FunctionDeclaration: false,
+          MethodDefinition: false,
+          ClassDeclaration: false,
+          ArrowFunctionExpression: false,
+          FunctionExpression: false,
+        },
+      },
+    ],
   },
   overrides: [
     {

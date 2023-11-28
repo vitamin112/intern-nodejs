@@ -3,15 +3,15 @@ const {
   getOne,
   addNewOne,
   delTodo,
-  updTodo,
+  updateTodo,
 } = require('../database/todoRepository');
 
-const getAllTodo = async (ctx) => {
+const getAllTodoController = async (ctx) => {
   try {
-    const todos = await getAll();
+    const todoes = await getAll();
 
     ctx.body = {
-      data: todos,
+      data: todoes,
     };
   } catch (error) {
     console.log(error);
@@ -22,7 +22,7 @@ const getAllTodo = async (ctx) => {
   }
 };
 
-const getById = async (ctx) => {
+const getByIdController = async (ctx) => {
   try {
     const {id} = ctx.params;
 
@@ -48,15 +48,15 @@ const getById = async (ctx) => {
   }
 };
 
-const addNewTodo = async (ctx) => {
+const addNewTodoController = async (ctx) => {
   try {
-    const rawData = await ctx.request.body;
+    const rawData = ctx.req.body;
 
-    // const todo = await addNewOne(rawData);
+    const todeRef = await addNewOne(rawData);
 
-    ctx.body = {
-      data: rawData,
-    };
+    return (ctx.body = {
+      data: todeRef,
+    });
   } catch (error) {
     console.log(error);
     return (ctx.body = {
@@ -66,12 +66,11 @@ const addNewTodo = async (ctx) => {
   }
 };
 
-const updateTodo = async (ctx) => {
+const updateTodoController = async (ctx) => {
   try {
     const {id} = ctx.params;
-    const rawData = await ctx.request.body;
 
-    const result = await updTodo(id, rawData);
+    const result = await updateTodo(id);
 
     return (ctx.body = {
       data: result,
@@ -86,7 +85,7 @@ const updateTodo = async (ctx) => {
   }
 };
 
-const deleteTodo = async (ctx) => {
+const deleteTodoController = async (ctx) => {
   try {
     const {id} = ctx.params;
 
@@ -94,9 +93,13 @@ const deleteTodo = async (ctx) => {
 
     if (todos) {
       return (ctx.body = {
-        data: 'success',
+        data: todos,
       });
     }
+    ctx.status = 404;
+    return (ctx.body = {
+      data: 'not found',
+    });
   } catch (error) {
     console.log(error);
 
@@ -108,9 +111,9 @@ const deleteTodo = async (ctx) => {
 };
 
 module.exports = {
-  getAllTodo,
-  getById,
-  addNewTodo,
-  updateTodo,
-  deleteTodo,
+  getAllTodoController,
+  getByIdController,
+  addNewTodoController,
+  updateTodoController,
+  deleteTodoController,
 };
