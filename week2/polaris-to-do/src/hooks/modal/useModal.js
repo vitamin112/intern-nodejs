@@ -1,10 +1,8 @@
-import { Modal } from "@shopify/polaris";
+import {Modal} from '@shopify/polaris';
 
 export default function useModal({
-  items = [],
-  setItems = () => {},
-  content = "",
-  title = "",
+  content = '',
+  title = '',
   open = false,
   setOpen = () => {},
 }) {
@@ -22,5 +20,5 @@ export default function useModal({
     </Modal>
   );
 
-  return { modal, open, openModal, closeModal };
+  return {modal, open, openModal, closeModal};
 }
