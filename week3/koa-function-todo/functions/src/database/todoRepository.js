@@ -1,6 +1,7 @@
 const app = require('./dbConfig.js');
 
 const db = app.firestore();
+const batch = db.batch();
 
 const getAll = async () => {
   try {
@@ -51,7 +52,7 @@ const addNewOne = async ({todo}) => {
     };
   } catch (error) {
     console.log(error);
-    return 'Something went wrong!';
+    return null;
   }
 };
 
@@ -65,6 +66,20 @@ const delTodo = async (id) => {
   } catch (error) {
     console.log(error);
     return null;
+  }
+};
+
+const deleteTodoes = async (idList) => {
+  try {
+    idList.forEach(async (id) => {
+      const todoRef = db.collection('todoes').doc(id);
+      batch.delete(todoRef, {isComplete: true});
+    });
+    await batch.commit();
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
   }
 };
 
@@ -82,4 +97,26 @@ const updateTodo = async (id) => {
   }
 };
 
-module.exports = {getAll, getOne, addNewOne, delTodo, updateTodo};
+const updateTodoes = async (idList) => {
+  try {
+    idList.forEach(async (id) => {
+      const todoRef = db.collection('todoes').doc(id);
+      batch.update(todoRef, {isComplete: true});
+    });
+    await batch.commit();
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+module.exports = {
+  getAll,
+  getOne,
+  addNewOne,
+  delTodo,
+  deleteTodoes,
+  updateTodo,
+  updateTodoes,
+};

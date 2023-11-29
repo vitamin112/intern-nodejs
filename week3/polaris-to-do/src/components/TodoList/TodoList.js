@@ -8,10 +8,11 @@ import {
   Stack,
 } from '@shopify/polaris';
 import {EnableSelectionMinor} from '@shopify/polaris-icons';
-import React, {useState} from 'react';
+import {useState} from 'react';
 import axios from '../../configs/axios';
 import useModal from '../../hooks/modal/useModal';
-import ModalAdd from '../Modal/Modal';
+import useToast from '../../hooks/toast/useToast';
+import ModalCreate from '../Modal/Modal';
 import './TodoList.scss';
 
 async function getData() {
@@ -24,15 +25,34 @@ const initTodoes = await getData();
 function TodoList() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [todoes, setTodoes] = useState(initTodoes ? initTodoes.data : []);
-  const [isOpen, setIsOpen] = useState(false);
+  const [todo, setTodo] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const {toast, showToast, setToatMessage} = useToast({message: 'Success'});
+
+  const handleCreate = async () => {
+    const resp = await axios.post('/api/todo', {todo});
+    if (resp.success) {
+      setTodoes([...todoes, resp.data]);
+      setToatMessage(resp.message);
+      showToast();
+      setTodo('');
+    } else {
+      setToatMessage(resp.message);
+      showToast();
+    }
+  };
 
   const {modal, openModal} = useModal({
-    items: todoes,
-    setOpen: setIsOpen,
-    open: isOpen,
-    setItems: setTodoes,
     title: 'Create a new todo',
-    content: <ModalAdd item={todoes} setItem={setTodoes} cb={setIsOpen} />,
+    primaryAction: handleCreate,
+    content: (
+      <ModalCreate
+        item={todoes}
+        setItem={setTodoes}
+        value={todo}
+        setValue={setTodo}
+      />
+    ),
   });
 
   const resourceName = {
@@ -40,48 +60,79 @@ function TodoList() {
     plural: 'todoes',
   };
 
-  const handleDeleteSelectedItems = () => {
+  const handleDeleteSelectedItems = async () => {
+    const reps = await axios.delete('/api/todoes', {data: selectedItems});
+
+    if (reps.success) {
+      setToatMessage(reps.message);
+      showToast();
+    }
+
     setTodoes((todoes) =>
       todoes.filter((item) => (selectedItems.includes(item.id) ? false : true))
     );
+    setSelectedItems([]);
+  };
+
+  const handleCompleteSelectedItems = async () => {
+    setIsLoading(true);
+    const reps = await axios.put('/api/todoes', {idList: selectedItems});
+
+    if (reps.success) {
+      setToatMessage(reps.message);
+      showToast();
+    }
+    setTodoes((todoes) =>
+      todoes.map((item) =>
+        selectedItems.includes(item.id) ? {...item, isComplete: true} : item
+      )
+    );
+    setIsLoading(false);
+    setSelectedItems([]);
+  };
+
+  const handleComplete = async (id) => {
+    setIsLoading(true);
+    const resp = await axios.put('api/todo/' + id);
+    setTodoes(
+      todoes.map((item) =>
+        item.id === id ? {...item, isComplete: true} : item
+      )
+    );
+    setIsLoading(false);
+    setToatMessage(resp.message);
+    showToast(resp.message);
+  };
+
+  const handleDelete = async (id) => {
+    setIsLoading(true);
+    const resp = await axios.delete('/api/todo/' + id);
+    if (resp.success) {
+      setTodoes(todoes.filter((item) => (item.id !== id ? true : false)));
+      setToatMessage(resp.message);
+      showToast();
+    } else {
+      setToatMessage(resp.message);
+      showToast();
+    }
+    setIsLoading(false);
   };
 
   const promotedBulkActions = [
     {
       content: 'Complete',
       onAction: () => {
-        setTodoes((todoes) =>
-          todoes.map((item) =>
-            selectedItems.includes(item.id) ? {...item, isComplete: true} : item
-          )
-        );
-        setSelectedItems([]);
+        handleCompleteSelectedItems();
       },
     },
     {
       content: 'Delete',
+
       onAction: () => {
         handleDeleteSelectedItems();
-        setSelectedItems([]);
       },
     },
   ];
-
-  const handleComplete = async (id) => {
-    setTodoes(
-      todoes.map((item) =>
-        item.id === id ? {...item, isComplete: true} : item
-      )
-    );
-    const resp = await axios.put('api/todo/' + id);
-    console.log(resp);
-  };
-
-  const handleRemove = async (id) => {
-    setTodoes(todoes.filter((item) => (item.id !== id ? true : false)));
-    const resp = await axios.delete('/api/todo/' + id);
-    console.log(resp);
-  };
 
   const selectAllBtnMarkup = (
     <Button
@@ -117,7 +168,7 @@ function TodoList() {
                 </Button>
               </Stack.Item>
               <Stack.Item>
-                <Button destructive onClick={() => handleRemove(id)}>
+                <Button destructive onClick={() => handleDelete(id)}>
                   Delete
                 </Button>
               </Stack.Item>
@@ -142,8 +193,10 @@ function TodoList() {
         },
       }}
     >
+      {toast}
       <Card>
         <ResourceList
+          loading={isLoading}
           resourceName={resourceName}
           items={todoes}
           renderItem={renderItem}

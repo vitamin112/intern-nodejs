@@ -3,7 +3,9 @@ const {
   getOne,
   addNewOne,
   delTodo,
+  deleteTodoes,
   updateTodo,
+  updateTodoes,
 } = require('../database/todoRepository');
 
 const getAllTodoController = async (ctx) => {
@@ -11,13 +13,16 @@ const getAllTodoController = async (ctx) => {
     const todoes = await getAll();
 
     ctx.body = {
+      success: true,
       data: todoes,
+      message: 'Get all todo items successfully',
     };
   } catch (error) {
     console.log(error);
     ctx.body = {
       success: false,
       message: error.message,
+      data: [],
     };
   }
 };
@@ -29,16 +34,18 @@ const getByIdController = async (ctx) => {
     const todo = await getOne(id);
 
     if (todo) {
-      return (ctx.body = {
+      ctx.body = {
+        success: true,
         data: todo,
-      });
+        message: 'Get todo items successfully',
+      };
     }
 
-    return (ctx.body = {
+    ctx.body = {
       success: false,
       message: 'can not find todo with id' + id,
       data: null,
-    });
+    };
   } catch (error) {
     console.log(error);
     return (ctx.body = {
@@ -54,14 +61,24 @@ const addNewTodoController = async (ctx) => {
 
     const todeRef = await addNewOne(rawData);
 
+    if (todeRef) {
+      return (ctx.body = {
+        data: todeRef,
+        success: true,
+        message: 'Create successfully',
+      });
+    }
     return (ctx.body = {
-      data: todeRef,
+      data: null,
+      success: false,
+      message: 'Something went wrong',
     });
   } catch (error) {
     console.log(error);
     return (ctx.body = {
       success: false,
       message: error.message,
+      data: null,
     });
   }
 };
@@ -74,11 +91,42 @@ const updateTodoController = async (ctx) => {
 
     return (ctx.body = {
       data: result,
+      success: true,
+      message: 'Update successfully',
     });
   } catch (error) {
     console.log(error);
 
     return (ctx.body = {
+      success: false,
+      message: error.message,
+      data: null,
+    });
+  }
+};
+
+const updateTodoesController = async (ctx) => {
+  try {
+    const {idList} = ctx.req.body;
+    const todo = await updateTodoes(idList);
+
+    if (todo) {
+      return (ctx.body = {
+        data: null,
+        success: true,
+        message: 'Update successfully',
+      });
+    }
+    return (ctx.body = {
+      data: null,
+      success: false,
+      message: 'Update failed',
+    });
+  } catch (error) {
+    console.log(error);
+
+    return (ctx.body = {
+      data: null,
       success: false,
       message: error.message,
     });
@@ -89,21 +137,54 @@ const deleteTodoController = async (ctx) => {
   try {
     const {id} = ctx.params;
 
-    const todos = await delTodo(id);
+    const todo = await delTodo(id);
 
-    if (todos) {
+    if (todo) {
       return (ctx.body = {
-        data: todos,
+        data: null,
+        success: true,
+        message: 'Update successfully',
       });
     }
-    ctx.status = 404;
     return (ctx.body = {
-      data: 'not found',
+      data: null,
+      success: false,
+      message: 'Update failed',
     });
   } catch (error) {
     console.log(error);
 
     return (ctx.body = {
+      data: null,
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const deleteTodoesController = async (ctx) => {
+  try {
+    const idList = ctx.req.body;
+    console.log(idList);
+    const todo = await deleteTodoes(idList);
+
+    if (todo) {
+      return (ctx.body = {
+        data: null,
+        success: true,
+        message: 'Delete successfully',
+      });
+    }
+    return (ctx.body = {
+      data: null,
+      success: false,
+      message: 'Update failed',
+    });
+  } catch (error) {
+    console.log(error);
+
+    return (ctx.body = {
+      data: null,
       success: false,
       message: error.message,
     });
@@ -115,5 +196,7 @@ module.exports = {
   getByIdController,
   addNewTodoController,
   updateTodoController,
+  updateTodoesController,
   deleteTodoController,
+  deleteTodoesController,
 };

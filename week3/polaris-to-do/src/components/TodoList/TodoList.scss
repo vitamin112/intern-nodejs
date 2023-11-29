@@ -1,6 +1,6 @@
 .title {
   color: #000;
-  font-feature-settings: "clig" off, "liga" off;
+  font-feature-settings: 'clig' off, 'liga' off;
   font-family: Arial;
   font-size: 20px;
   font-style: normal;
@@ -32,7 +32,9 @@
   border-radius: 4px;
 }
 
-.Polaris-ButtonGroup__Item:last-child button {
+.Polaris-ResourceList__BulkActionsWrapper
+  .Polaris-ButtonGroup__Item:last-child
+  button {
   background: #d82c0d;
   color: #fff;
   border-radius: 4px;

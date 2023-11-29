@@ -1,4 +1,4 @@
-import {AppProvider, Frame} from '@shopify/polaris';
+import {AppProvider, Frame, Page} from '@shopify/polaris';
 import '@shopify/polaris/dist/styles.css';
 // import en from "@shopify/polaris/locales/en.json";
 import en from '@shopify/polaris/locales/en.json';
@@ -28,9 +28,11 @@ const theme = {
 function App() {
   return (
     <AppProvider theme={theme} i18n={en}>
-      <Frame topBar={<Header />}>
-        <TodoList />
-      </Frame>
+      <Page>
+        <Frame topBar={<Header />}>
+          <TodoList />
+        </Frame>
+      </Page>
     </AppProvider>
   );
 }
