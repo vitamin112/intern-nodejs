@@ -2,6 +2,7 @@ import {
   Badge,
   Button,
   Card,
+  Frame,
   Page,
   ResourceItem,
   ResourceList,
@@ -10,29 +11,36 @@ import {
 import {EnableSelectionMinor} from '@shopify/polaris-icons';
 import {useState} from 'react';
 import axios from '../../configs/axios';
+import useDeleteAPI from '../../hooks/api/useDeleteApi';
+import useGetAPI from '../../hooks/api/useGetApi';
+import usePostAPI from '../../hooks/api/usePostApi';
+import usePutAPI from '../../hooks/api/usePutApi';
 import useModal from '../../hooks/modal/useModal';
 import useToast from '../../hooks/toast/useToast';
 import ModalCreate from '../Modal/Modal';
 import './TodoList.scss';
 
-async function getData() {
-  const response = await axios.get('/api/todo');
-  return response;
-}
-
-const initTodoes = await getData();
-
 function TodoList() {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [todoes, setTodoes] = useState(initTodoes ? initTodoes.data : []);
   const [todo, setTodo] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const {toast, showToast, setToatMessage} = useToast({message: 'Success'});
+  const {toast, showToast, setToatMessage} = useToast();
+  const {data: todos, setData: setTodos, getting} = useGetAPI('/api/todo');
+  const {postData} = usePostAPI('/api/todo');
+  const {handleDeleteItem, deleting} = useDeleteAPI();
+  const {handlePutItem, putting} = usePutAPI();
+
+  const resourceName = {
+    singular: 'todos',
+    plural: 'todos',
+  };
 
   const handleCreate = async () => {
-    const resp = await axios.post('/api/todo', {todo});
+    const resp = await postData({todo});
+
     if (resp.success) {
-      setTodoes([...todoes, resp.data]);
+      setTodos([...todos, resp.data]);
+
       setToatMessage(resp.message);
       showToast();
       setTodo('');
@@ -47,43 +55,38 @@ function TodoList() {
     primaryAction: handleCreate,
     content: (
       <ModalCreate
-        item={todoes}
-        setItem={setTodoes}
+        item={todos}
+        setItem={setTodos}
         value={todo}
         setValue={setTodo}
       />
     ),
   });
 
-  const resourceName = {
-    singular: 'todoes',
-    plural: 'todoes',
-  };
-
   const handleDeleteSelectedItems = async () => {
-    const reps = await axios.delete('/api/todoes', {data: selectedItems});
+    const reps = await handleDeleteItem('/api/todos', selectedItems);
 
     if (reps.success) {
       setToatMessage(reps.message);
       showToast();
     }
 
-    setTodoes((todoes) =>
-      todoes.filter((item) => (selectedItems.includes(item.id) ? false : true))
+    setTodos((todos) =>
+      todos.filter((item) => (selectedItems.includes(item.id) ? false : true))
     );
     setSelectedItems([]);
   };
 
   const handleCompleteSelectedItems = async () => {
     setIsLoading(true);
-    const reps = await axios.put('/api/todoes', {idList: selectedItems});
+    const reps = await axios.put('/api/todos', {idList: selectedItems});
 
     if (reps.success) {
       setToatMessage(reps.message);
       showToast();
     }
-    setTodoes((todoes) =>
-      todoes.map((item) =>
+    setTodos((todos) =>
+      todos.map((item) =>
         selectedItems.includes(item.id) ? {...item, isComplete: true} : item
       )
     );
@@ -92,51 +95,43 @@ function TodoList() {
   };
 
   const handleComplete = async (id) => {
-    setIsLoading(true);
-    const resp = await axios.put('api/todo/' + id);
-    setTodoes(
-      todoes.map((item) =>
-        item.id === id ? {...item, isComplete: true} : item
-      )
+    const resp = await handlePutItem('/api/todo/' + id);
+
+    setTodos(
+      todos.map((item) => (item.id === id ? {...item, isComplete: true} : item))
     );
-    setIsLoading(false);
     setToatMessage(resp.message);
     showToast(resp.message);
   };
 
   const handleDelete = async (id) => {
-    setIsLoading(true);
-    const resp = await axios.delete('/api/todo/' + id);
+    const resp = await handleDeleteItem('api/todo/' + id);
     if (resp.success) {
-      setTodoes(todoes.filter((item) => (item.id !== id ? true : false)));
+      setTodos(todos.filter((item) => (item.id !== id ? true : false)));
+
       setToatMessage(resp.message);
       showToast();
     } else {
       setToatMessage(resp.message);
       showToast();
     }
-    setIsLoading(false);
   };
 
   const promotedBulkActions = [
     {
       content: 'Complete',
-      onAction: () => {
-        handleCompleteSelectedItems();
-      },
+      onAction: handleCompleteSelectedItems,
     },
     {
       content: 'Delete',
 
-      onAction: () => {
-        handleDeleteSelectedItems();
-      },
+      onAction: handleDeleteSelectedItems,
     },
   ];
 
   const selectAllBtnMarkup = (
     <Button
-      onClick={() => setSelectedItems(todoes.map((item) => item.id))}
+      onClick={() => setSelectedItems(todos.map((item) => item.id))}
       icon={EnableSelectionMinor}
     >
       Select
@@ -184,31 +179,31 @@ function TodoList() {
   }
 
   return (
-    <Page
-      title='Todoes'
-      primaryAction={{
-        content: 'Create todo',
-        onAction: () => {
-          openModal();
-        },
-      }}
-    >
-      {toast}
-      <Card>
-        <ResourceList
-          loading={isLoading}
-          resourceName={resourceName}
-          items={todoes}
-          renderItem={renderItem}
-          selectedItems={selectedItems}
-          onSelectionChange={setSelectedItems}
-          promotedBulkActions={promotedBulkActions}
-          resolveItemId={resolveItemIds}
-          alternateTool={selectAllBtnMarkup}
-        />
-      </Card>
-      {modal}
-    </Page>
+    <Frame>
+      <Page
+        title='Todos'
+        primaryAction={{
+          content: 'Create todo',
+          onAction: openModal,
+        }}
+      >
+        {toast}
+        <Card>
+          <ResourceList
+            loading={getting || deleting || putting}
+            resourceName={resourceName}
+            items={todos}
+            renderItem={renderItem}
+            selectedItems={selectedItems}
+            onSelectionChange={setSelectedItems}
+            promotedBulkActions={promotedBulkActions}
+            resolveItemId={resolveItemIds}
+            alternateTool={selectAllBtnMarkup}
+          />
+        </Card>
+        {modal}
+      </Page>
+    </Frame>
   );
 }
 
