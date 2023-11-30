@@ -6,8 +6,8 @@ const {
   getByIdController,
   updateTodoController,
   deleteTodoController,
-  updateTodoesController,
-  deleteTodoesController,
+  updateTodosController,
+  deleteTodosController,
 } = require('../handlers/todoController');
 
 const router = new Router({
@@ -20,12 +20,12 @@ router.get('/todo', getAllTodoController);
 
 router.put('/todo/:id', updateTodoController);
 
-router.put('/todoes', updateTodoesController);
+router.put('/todos', updateTodosController);
 
 router.get('/todo/:id', getByIdController);
 
 router.delete('/todo/:id', deleteTodoController);
 
-router.delete('/todoes', deleteTodoesController);
+router.delete('/todos', deleteTodosController);
 
 module.exports = router;

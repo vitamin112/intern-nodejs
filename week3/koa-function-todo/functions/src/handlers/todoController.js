@@ -3,18 +3,18 @@ const {
   getOne,
   addNewOne,
   delTodo,
-  deleteTodoes,
+  deleteTodos,
   updateTodo,
-  updateTodoes,
+  updateTodos,
 } = require('../database/todoRepository');
 
 const getAllTodoController = async (ctx) => {
   try {
-    const todoes = await getAll();
+    const todos = await getAll();
 
     ctx.body = {
       success: true,
-      data: todoes,
+      data: todos,
       message: 'Get all todo items successfully',
     };
   } catch (error) {
@@ -57,9 +57,9 @@ const getByIdController = async (ctx) => {
 
 const addNewTodoController = async (ctx) => {
   try {
-    const rawData = ctx.req.body;
+    const {data} = ctx.req.body;
 
-    const todeRef = await addNewOne(rawData);
+    const todeRef = await addNewOne(data);
 
     if (todeRef) {
       return (ctx.body = {
@@ -105,10 +105,10 @@ const updateTodoController = async (ctx) => {
   }
 };
 
-const updateTodoesController = async (ctx) => {
+const updateTodosController = async (ctx) => {
   try {
     const {idList} = ctx.req.body;
-    const todo = await updateTodoes(idList);
+    const todo = await updateTodos(idList);
 
     if (todo) {
       return (ctx.body = {
@@ -162,11 +162,11 @@ const deleteTodoController = async (ctx) => {
   }
 };
 
-const deleteTodoesController = async (ctx) => {
+const deleteTodosController = async (ctx) => {
   try {
     const idList = ctx.req.body;
-    console.log(idList);
-    const todo = await deleteTodoes(idList);
+
+    const todo = await deleteTodos(idList);
 
     if (todo) {
       return (ctx.body = {
@@ -196,7 +196,7 @@ module.exports = {
   getByIdController,
   addNewTodoController,
   updateTodoController,
-  updateTodoesController,
+  updateTodosController,
   deleteTodoController,
-  deleteTodoesController,
+  deleteTodosController,
 };

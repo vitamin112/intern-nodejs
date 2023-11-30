@@ -40,7 +40,6 @@ const getOne = async (id) => {
 
 const addNewOne = async ({todo}) => {
   try {
-    console.log(todo);
     const todoRef = await db
       .collection('todoes')
       .add({todo, isComplete: false});
@@ -69,11 +68,11 @@ const delTodo = async (id) => {
   }
 };
 
-const deleteTodoes = async (idList) => {
+const deleteTodos = async (idList) => {
   try {
     idList.forEach(async (id) => {
       const todoRef = db.collection('todoes').doc(id);
-      batch.delete(todoRef, {isComplete: true});
+      batch.delete(todoRef);
     });
     await batch.commit();
     return true;
@@ -97,7 +96,7 @@ const updateTodo = async (id) => {
   }
 };
 
-const updateTodoes = async (idList) => {
+const updateTodos = async (idList) => {
   try {
     idList.forEach(async (id) => {
       const todoRef = db.collection('todoes').doc(id);
@@ -116,7 +115,7 @@ module.exports = {
   getOne,
   addNewOne,
   delTodo,
-  deleteTodoes,
+  deleteTodos,
   updateTodo,
-  updateTodoes,
+  updateTodos,
 };
