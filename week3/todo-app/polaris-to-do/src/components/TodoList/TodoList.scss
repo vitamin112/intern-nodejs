@@ -1,0 +1,41 @@
+.title {
+  color: #000;
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: Arial;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 32px;
+}
+
+#createBtn {
+  border-radius: 4px;
+  color: #fff;
+  background: var(--action-primary-default, #008060);
+  box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.2) inset,
+    0px 1px 0px 0px rgba(0, 0, 0, 0.08);
+}
+.Polaris-Badge--statusInfo {
+  margin: 0 8px !important;
+}
+.Polaris-ButtonGroup--segmented {
+  gap: 10px !important;
+}
+.Polaris-ResourceList__SelectButtonWrapper {
+  display: none;
+}
+.Polaris-ResourceList-CheckableButton.Polaris-ResourceList-CheckableButton__CheckableButton--selected {
+  border-color: transparent;
+}
+
+.Polaris-Button {
+  border-radius: 4px;
+}
+
+.Polaris-ResourceList__BulkActionsWrapper
+  .Polaris-ButtonGroup__Item:last-child
+  button {
+  background: #d82c0d;
+  color: #fff;
+  border-radius: 4px;
+}
