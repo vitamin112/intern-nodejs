@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+      name="viewport"
+    />
+    <meta content="ie=edge" http-equiv="X-UA-Compatible" />
+    <meta name="theme-color" content="#4285f4" />
+    <meta name="description" content="An AVADA Shopify application for Shopify" />
+    <title>Login | AVADA CRM</title>
+    <link rel="icon" href="/assets/favicon.png" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat|Poppins|Bebas+Neue&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/loadingio/loading.css@v2.0.0/dist/loading.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//cdn.jsdelivr.net/gh/loadingio/ldbutton@v1.0.1/dist/ldbtn.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="/css/login.css" />
+  </head>
+  <body>
+    <div id="firebaseui-auth-container"></div>
+    <div class="limiter">
+      <div class="Avada-Login__Container">
+        <div class="Avada-Login__Wrap">
+          <div class="Avada-Login__Form Avada-Validate__Form flex-sb flex-w">
+            <span class="Avada-Login__Form--title">
+              Sign In With
+            </span>
+            <button id="btn-google-login" class="btn-google" style="width: 100%">
+              <img
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                alt="GOOGLE"
+              />
+              Google
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
+    <script type="module">
+      (function() {
+        var config = {
+          apiKey: 'AIzaSyAVDYsWfBBfHhdkApvsBrY8SK6i4AmjQAg',
+          authDomain: 'fire-store-155e0.firebaseapp.com',
+          databaseURL: 'fire-store-155e0.firebaseio.com',
+          projectId: 'fire-store-155e0.firebaseapp.com',
+          storageBucket: 'fire-store-155e0.appspot.com',
+          messagingSenderId: '883836123858'
+        };
+        firebase.initializeApp(config);
+        var database = firebase.database();
+
+        var ggProvider = new firebase.auth.GoogleAuthProvider();
+
+        const btnGoogle = document.getElementById('btn-google-login');
+
+        async function handleLoginWithGoogle(user) {
+          const resp = await fetch('http://localhost:5000/api/login', {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+          });
+          const result = await resp.json();
+
+          if (result.success) {
+            localStorage.setItem('user', JSON.stringify(result.data));
+            window.location = 'https://localhost:3000';
+            return;
+          }
+          alert(result.message);
+        }
+
+        function getUserInfoFromGoogle() {
+          firebase
+            .auth()
+            .signInWithPopup(ggProvider)
+            .then(async function(result) {
+              const user = {
+                email: result.user.email,
+                avatar: result.user.photoURL
+              };
+
+              await handleLoginWithGoogle(user);
+            })
+            .catch(function(error) {
+              console.error('Error: hande error here>>>', error.code);
+            });
+        }
+
+        btnGoogle.addEventListener('click', getUserInfoFromGoogle);
+      })();
+    </script>
+  </body>
+</html>
