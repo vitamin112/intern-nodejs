@@ -1,0 +1,4 @@
+{
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
+  "git.ignoreLimitWarning": true
+}
