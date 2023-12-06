@@ -17,6 +17,7 @@ import usePostAPI from '../../hooks/api/usePostApi';
 import usePutAPI from '../../hooks/api/usePutApi';
 import useModal from '../../hooks/modal/useModal';
 import useToast from '../../hooks/toast/useToast';
+import Empty from '../Empty/Empty';
 import ModalCreate from '../Modal/Modal';
 import './TodoList.scss';
 
@@ -190,6 +191,7 @@ function TodoList() {
         {toast}
         <Card>
           <ResourceList
+            emptyState={<Empty />}
             loading={getting || deleting || putting}
             resourceName={resourceName}
             items={todos}

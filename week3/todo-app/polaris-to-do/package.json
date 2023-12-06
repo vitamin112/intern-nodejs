@@ -1,6 +1,6 @@
 {
   "name": "polaris-to-do",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@firebase/app": "^0.9.23",
@@ -12,7 +12,10 @@
     "firebase-admin": "9.5.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "cross-env": "5.0.5",
+    "koa-function-todo": "1.0.0",
+    "functions": "1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

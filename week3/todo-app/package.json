@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "workspaces": [
+    "koa-function-todo",
+    "polaris-to-do"
+  ],
+  "scripts": {
+    "start-dev": "concurrently \"yarn workspace koa-function-todo run serve\" \"yarn workspace polaris-to-do run start\" "
+  }
+}
