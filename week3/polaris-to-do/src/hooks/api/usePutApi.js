@@ -7,11 +7,11 @@ const usePutAPI = () => {
   async function handlePutItem(url, idList) {
     setPutting(true);
     if (idList) {
-      const response = await axios.put(url, {data: idList});
+      const response = await axios.delete(url, {data: idList});
       setPutting(false);
       return response;
     }
-    const response = await axios.put(url);
+    const response = await axios.delete(url);
     setPutting(false);
     return response;
   }
