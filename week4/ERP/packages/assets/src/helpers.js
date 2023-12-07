@@ -1,8 +1,8 @@
 import axios from 'axios';
 import * as firebase from 'firebase/app';
-import 'firebase/storage';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/storage';
 import {createBrowserHistory} from 'history';
 import {CRM_APP_KEY, CRM_ENV_KEY, getStorageData} from './helpers/storage';
 import isOutboundLink from './helpers/utils/isOutboundLink';

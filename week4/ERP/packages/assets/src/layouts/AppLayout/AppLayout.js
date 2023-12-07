@@ -18,7 +18,7 @@ export default function AppLayout({children}) {
   const {state, dispatch} = useStore();
   const {loading, toast} = state;
 
-  const [isNavOpen, setIsNavOpen] = useState(true);
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const toggleOpenNav = () => setIsNavOpen(prev => !prev);
 
   const navigationClass = [

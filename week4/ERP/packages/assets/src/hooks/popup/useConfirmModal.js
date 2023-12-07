@@ -1,5 +1,5 @@
-import React, {useRef, useState} from 'react';
 import {Modal} from '@shopify/polaris';
+import React, {useRef, useState} from 'react';
 
 /**
  * @param confirmAction

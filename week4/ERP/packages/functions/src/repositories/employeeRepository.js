@@ -42,14 +42,44 @@ export async function getEmployeeById(id) {
   }
 }
 
+/**
+ * @param {string} email
+ * @returns {Object}
+ */
+export async function getEmployeeByEmail(email) {
+  try {
+    const userRef = await collection.where('email', '==', email).get();
+    const user = userRef.docs[0]?.data();
+
+    return user ? user : null;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+/**
+ * @param {Object} data
+ * @returns {Object}
+ */
+export async function create(data) {
+  try {
+    const userRef = await collection.add(data);
+
+    return {...data, id: userRef.id};
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
 export async function login(data) {
   try {
     const userRef = await collection.where('email', '==', data.email).get();
     const user = userRef.docs[0]?.data();
 
-    if (user && user.role !== '' && user.status === 'active') {
+    if (user && user.role !== '' && user.status) {
       if (user.avatar === '') {
-        console.log('>>>>check user data', user.avatar === '' ? data.avatar : user.avatar);
         await collection.doc(userRef.docs[0].id).update({avatar: data.avatar});
       }
       return {...user, avatar: user.avatar === '' ? data.avatar : user.avatar};

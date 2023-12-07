@@ -1,8 +1,8 @@
-import {useState} from 'react';
+import {setToast} from '@assets/actions/storeActions';
 import {api} from '@assets/helpers';
 import {useStore} from '@assets/reducers/storeReducer';
-import {setToast} from '@assets/actions/storeActions';
 import {handleError} from '@assets/services/errorService';
+import {useState} from 'react';
 
 /**
  * @param url
@@ -27,7 +27,7 @@ export default function useCreateApi({
   const handleCreate = async data => {
     try {
       setCreating(true);
-      const resp = await api(url, {body: {data}, method: 'POST'});
+      const resp = await api(url, 'POST', data);
       if (resp.success) {
         setToast(dispatch, resp.message || successMsg);
       }

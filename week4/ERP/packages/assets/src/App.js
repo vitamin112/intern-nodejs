@@ -2,7 +2,7 @@ import {storeTypes} from '@assets/actions/storeActions';
 import ErrorBoundary from '@assets/components/ErrorBoundary';
 import ReactRouterLink from '@assets/components/ReactRouterLink';
 import theme from '@assets/config/theme';
-// import {history} from '@assets/history';
+import {history} from '@assets/history';
 import AppLayout from '@assets/layouts/AppLayout';
 import {useStore} from '@assets/reducers/storeReducer';
 import {AppProvider} from '@shopify/polaris';
@@ -24,7 +24,7 @@ export default function App() {
 
   const user = getStorageData('user');
 
-  if (!user || user.status !== 'active' || !user.role) {
+  if (!user || !user.status || !user.role) {
     window.location.href = '/auth/login';
   }
 
