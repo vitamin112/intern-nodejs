@@ -1,8 +1,8 @@
-import {useState} from 'react';
+import {setToast} from '@assets/actions/storeActions';
 import {api} from '@assets/helpers';
 import {useStore} from '@assets/reducers/storeReducer';
-import {setToast} from '@assets/actions/storeActions';
 import {handleError} from '@assets/services/errorService';
+import {useState} from 'react';
 
 /**
  * @param url
@@ -34,7 +34,7 @@ export default function useEditApi({
       setEditing(prev =>
         typeof newEditing === 'boolean' ? newEditing : {...prev, [newEditing]: true}
       );
-      const resp = await api(url, {body: {data}, method: 'PUT'});
+      const resp = await api(url, 'PUT', data);
       if (resp.success && useToast) {
         setToast(dispatch, resp.message || successMsg);
       }

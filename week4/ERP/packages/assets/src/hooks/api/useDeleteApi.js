@@ -1,8 +1,8 @@
-import {useState} from 'react';
+import {setToast} from '@assets/actions/storeActions';
 import {api} from '@assets/helpers';
 import {useStore} from '@assets/reducers/storeReducer';
-import {setToast} from '@assets/actions/storeActions';
 import {handleError} from '@assets/services/errorService';
+import {useState} from 'react';
 
 /**
  * @param url
@@ -19,7 +19,7 @@ export default function useDeleteApi({url}) {
   const handleDelete = async data => {
     try {
       setDeleting(true);
-      const resp = await api(url, {body: {data}, method: 'DELETE'});
+      const resp = await api(url, 'DELETE', data);
       if (resp.success) {
         setToast(dispatch, resp.message || 'Deleted successfully');
         return true;
