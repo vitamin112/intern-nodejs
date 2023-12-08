@@ -19,7 +19,7 @@ export const validInputMiddleWare = async (ctx, next) => {
   } catch (e) {
     console.log(e);
     return (ctx.body = {
-      error: 'invalid input!',
+      error: 'Check your input!',
       success: false
     });
   }
