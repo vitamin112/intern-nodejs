@@ -5,12 +5,14 @@ import {Navigation} from '@shopify/polaris';
 import {HomeMajor, ListMajor, SettingsMajor, ShareMinor} from '@shopify/polaris-icons';
 import React from 'react';
 import {useHistory, useLocation} from 'react-router-dom';
+import {getStorageData} from '../../helpers/storage';
 
 /**
  * @return {JSX.Element}
  * @constructor
  */
 export default function AppNavigation() {
+  const user = getStorageData('user');
   const history = useHistory();
   const {pathname} = useLocation();
 
@@ -22,6 +24,7 @@ export default function AppNavigation() {
 
   const prepareMenu = (menu, item) => {
     if (!item) return menu;
+    if (!user.permissions.includes(item.url)) return menu;
 
     const {subNavigationItems: subMenus, url, path, includeUrl} = item;
 
@@ -43,6 +46,7 @@ export default function AppNavigation() {
         selected: isSelected(x.url, false) || isSelected(x.includeUrl, false)
       }))
     });
+
     return menu;
   };
 

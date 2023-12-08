@@ -1,21 +1,42 @@
-import {routePrefix} from '@assets/config/app';
 import Employees from '@assets/loadables/Employees/Employees';
 import Home from '@assets/loadables/Home';
 import NotFound from '@assets/loadables/NotFound';
 import Profile from '@assets/loadables/Profile/Profile';
-import Samples from '@assets/loadables/Samples/Samples';
 import Settings from '@assets/loadables/Settings/Settings';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
+import {getStorageData} from '../helpers/storage';
+
+const user = getStorageData('user');
+const urlEndpoint = [
+  {
+    url: '/',
+    component: Home
+  },
+  {
+    url: '/settings',
+    component: Settings
+  },
+  {
+    url: '/profile',
+    component: Profile
+  },
+  {
+    url: '/employees',
+    component: Employees
+  }
+];
+
+const permission = urlEndpoint.filter(({url}) => {
+  return user.permissions.includes(url);
+});
 
 // eslint-disable-next-line react/prop-types
-const Routes = ({prefix = routePrefix}) => (
+const Routes = () => (
   <Switch>
-    <Route exact path={prefix + '/'} component={Home} />
-    <Route exact path={prefix + '/samples'} component={Samples} />
-    <Route exact path={prefix + '/settings'} component={Settings} />
-    <Route exact path={prefix + '/profile'} component={Profile} />
-    <Route exact path={prefix + '/employees'} component={Employees} />
+    {permission.map(({url, component}) => (
+      <Route key={url} exact path={url} component={component} />
+    ))}
     <Route path="*" component={NotFound} />
   </Switch>
 );

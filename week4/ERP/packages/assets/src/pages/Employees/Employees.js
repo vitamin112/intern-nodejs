@@ -1,18 +1,22 @@
 import {
   Avatar,
+  Button,
+  ButtonGroup,
   Card,
   Checkbox,
-  EmptyState,
-  IndexTable,
+  DataTable,
   Layout,
+  Link,
+  Loading,
   Page,
   Select,
-  TextField,
-  TextStyle,
-  useIndexResourceState
+  TextField
 } from '@shopify/polaris';
+import {DeleteMajor, EditMinor} from '@shopify/polaris-icons';
 import React, {useEffect, useState} from 'react';
 import useCreateApi from '../../hooks/api/useCreateApi';
+import useDeleteApi from '../../hooks/api/useDeleteApi';
+import useEditApi from '../../hooks/api/useEditApi';
 import useFetchApi from '../../hooks/api/useFetchApi';
 import useConfirmModal from '../../hooks/popup/useConfirmModal';
 
@@ -23,80 +27,6 @@ import useConfirmModal from '../../hooks/popup/useConfirmModal';
  * @constructor
  */
 
-function EmployeesList({items, loading}) {
-  const resourceName = {
-    singular: 'employee',
-    plural: 'employees'
-  };
-
-  const {selectedResources, allResourcesSelected, handleSelectionChange} = useIndexResourceState(
-    items
-  );
-
-  const promotedBulkActions = [
-    {
-      content: 'Edit employees',
-      onAction: () => console.log('Todo: implement bulk edit')
-    }
-  ];
-  const bulkActions = [
-    {
-      content: 'Add tags',
-      onAction: () => console.log('Todo: implement bulk add tags')
-    },
-    {
-      content: 'Remove tags',
-      onAction: () => console.log('Todo: implement bulk remove tags')
-    },
-    {
-      content: 'Delete employees',
-      onAction: () => console.log('Todo: implement bulk delete')
-    }
-  ];
-
-  const rowMarkup = items.map(({id, fullName, englishName, email, role, status, avatar}, index) => (
-    <IndexTable.Row id={id} key={id} selected={selectedResources.includes(id)} position={index}>
-      <IndexTable.Cell>
-        <Avatar source={avatar} />
-      </IndexTable.Cell>
-      <IndexTable.Cell>
-        <TextStyle variation="strong">{fullName}</TextStyle>
-      </IndexTable.Cell>
-      <IndexTable.Cell>{englishName}</IndexTable.Cell>
-      <IndexTable.Cell>{email}</IndexTable.Cell>
-      <IndexTable.Cell>{role}</IndexTable.Cell>
-      <IndexTable.Cell>
-        <div style={{padding: '10px'}}>{status ? 'active' : ''}</div>
-      </IndexTable.Cell>
-    </IndexTable.Row>
-  ));
-
-  return (
-    <Card>
-      <IndexTable
-        loading={loading}
-        emptyState={<EmptyState />}
-        resourceName={resourceName}
-        itemCount={items.length}
-        selectedItemsCount={allResourcesSelected ? 'All' : selectedResources.length}
-        onSelectionChange={handleSelectionChange}
-        bulkActions={bulkActions}
-        promotedBulkActions={promotedBulkActions}
-        headings={[
-          {title: 'Avatar'},
-          {title: 'Full Name'},
-          {title: 'English Name'},
-          {title: 'Email'},
-          {title: 'Status'},
-          {title: 'Role'}
-        ]}
-      >
-        {rowMarkup}
-      </IndexTable>
-    </Card>
-  );
-}
-
 export default function Employees() {
   const initEmployee = {
     email: '',
@@ -106,20 +36,52 @@ export default function Employees() {
     avatar: '',
     englishName: ''
   };
-  const {creating, handleCreate} = useCreateApi({url: '/employees'});
-  const {data: employees, setData: setEmployees, fetchApi, loading: getting} = useFetchApi({
+  const {creating, handleCreate} = useCreateApi({url: '/employees', fullResp: true});
+  const {editing, handleEdit} = useEditApi({url: '/employees', fullResp: true});
+  const {deleting, handleDelete} = useDeleteApi({url: '/employees'});
+  const {data, setData, fetchApi, loading: getting} = useFetchApi({
     url: '/employees'
   });
-  const [isInValid, setIsInValid] = useState(true);
   const [inputs, setInputs] = useState(initEmployee);
+  const [modalActionType, setModalActionType] = useState('');
 
   const onInputChange = (value, key) => {
     setInputs(pre => ({...pre, [key]: value}));
   };
 
-  const validInput = () => {
-    if (inputs.email !== '' && inputs.fullName !== '') {
-      setIsInValid(false);
+  const handelAction = (action, payload) => {
+    if (action === 'CREATE') return handleCreate(payload);
+    if (action === 'UPDATE') return handleEdit(payload);
+    return handleDelete(payload);
+  };
+
+  const modalTitle = ({input}) => {
+    switch (input.current) {
+      case 'CREATE':
+        return 'CREATE A NEW EMPLOYEE';
+      case 'UPDATE':
+        return 'UPDATE EMPLOYEE INFORMATION';
+      default:
+        return 'DELETE EMPLOYEE';
+    }
+  };
+
+  const handleSuccess = result => {
+    try {
+      switch (modalActionType) {
+        case 'CREATE':
+          if (result.success) setData(prev => [...prev, result.data]);
+          break;
+        case 'UPDATE':
+          if (result.success)
+            setData(prev => prev.map(user => (user.id === result.data.id ? result.data : user)));
+          break;
+        default:
+          setData(prev => prev.filter(employee => employee.id !== inputs));
+          break;
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -131,7 +93,6 @@ export default function Employees() {
         id="email"
         type="email"
         value={inputs.email}
-        onBlur={validInput}
         onChange={onInputChange}
       />
 
@@ -140,7 +101,6 @@ export default function Employees() {
         requiredIndicator
         id="fullName"
         value={inputs.fullName}
-        onBlur={validInput}
         onChange={onInputChange}
       />
       <TextField
@@ -166,19 +126,15 @@ export default function Employees() {
   );
 
   const {modal, openModal} = useConfirmModal({
-    content: modalContent,
-    buttonTitle: 'Create',
-    defaultCurrentInput: inputs,
-    confirmAction: () => handleCreate(inputs),
-    loading: creating,
-    disabled: isInValid,
-    successCallback: e => {
-      if (e) {
-        setEmployees(prev => [...prev, inputs]);
-        setInputs(initEmployee);
-      } else {
-      }
-    }
+    buttonTitle: modalActionType === 'DELETE' ? 'Delete' : 'Save',
+    destructive: modalActionType === 'DELETE',
+    loading: creating || editing || deleting,
+    content: modalActionType === 'DELETE' ? undefined : modalContent,
+    disabled: modalActionType !== 'DELETE' && (inputs.email === '' || inputs.fullName === ''),
+    HtmlTitle: modalTitle,
+    confirmAction: action => handelAction(action, inputs),
+    successCallback: handleSuccess,
+    closeCallback: () => setInputs(initEmployee)
   });
 
   useEffect(() => {
@@ -194,16 +150,81 @@ export default function Employees() {
       primaryAction={{
         content: 'Create',
         onAction: () => {
-          openModal();
+          openModal('CREATE');
+          setModalActionType('CREATE');
         }
       }}
     >
       <Layout>
         <Layout.Section>
+          <EmployeesList
+            items={data}
+            loading={getting}
+            openModal={openModal}
+            setInputs={setInputs}
+            setModalActionType={setModalActionType}
+          />
           {modal}
-          <EmployeesList items={employees} loading={getting} />
         </Layout.Section>
       </Layout>
     </Page>
+  );
+}
+
+function EmployeesList({items, loading, setModalActionType, openModal, setInputs}) {
+  const rowMarkup = items.map(({id, fullName, englishName, email, role, status, avatar}, index) => [
+    index + 1,
+    <Avatar source={avatar} />,
+    <Link>{fullName}</Link>,
+    englishName,
+    email,
+    role,
+    status ? 'active' : '',
+    <ButtonGroup variant="segmented">
+      <Button
+        icon={EditMinor}
+        onClick={() => {
+          openModal('UPDATE');
+          setModalActionType('UPDATE');
+          setInputs({id, fullName, englishName, email, role, status, avatar});
+        }}
+      />
+      <Button
+        icon={DeleteMajor}
+        id={id}
+        onClick={(a, b) => {
+          openModal('DELETE');
+          setModalActionType('DELETE');
+          setInputs(id);
+        }}
+        destructive
+      />
+    </ButtonGroup>
+  ]);
+
+  return (
+    <Card>
+      {loading ? (
+        <Loading />
+      ) : (
+        <DataTable
+          columnContentTypes={[
+            'text',
+            'text',
+            'text',
+            'text',
+            'text',
+            'text',
+            'text',
+            'text',
+            'text'
+          ]}
+          headings={['#', 'Avatar', 'Full name', 'English name', 'Email', 'Role', 'Status', '']}
+          rows={rowMarkup}
+        >
+          {rowMarkup}
+        </DataTable>
+      )}
+    </Card>
   );
 }
