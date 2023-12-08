@@ -25,10 +25,7 @@ export async function getEmployees() {
     return null;
   }
 }
-/**
- * @param {string} id
- * @returns {Object}
- */
+
 export async function getEmployeeById(id) {
   try {
     const doc = await collection.doc(id).get();
@@ -42,10 +39,6 @@ export async function getEmployeeById(id) {
   }
 }
 
-/**
- * @param {string} email
- * @returns {Object}
- */
 export async function getEmployeeByEmail(email) {
   try {
     const userRef = await collection.where('email', '==', email).get();
@@ -58,15 +51,33 @@ export async function getEmployeeByEmail(email) {
   }
 }
 
-/**
- * @param {Object} data
- * @returns {Object}
- */
-export async function create(data) {
+export async function createEmployee(data) {
   try {
     const userRef = await collection.add(data);
 
     return {...data, id: userRef.id};
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+export async function deleteEmployee(id) {
+  try {
+    await collection.doc(id).delete();
+
+    return id;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+export async function editEmployee(data) {
+  try {
+    const userRef = await collection.doc(data.id).set({...data});
+    console.log(userRef);
+    return {...data};
   } catch (e) {
     console.error(e);
     return null;

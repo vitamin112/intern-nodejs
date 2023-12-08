@@ -19,11 +19,6 @@ const CreateModal = () => {
     console.log(userData);
   };
 
-  // const onInputChange = (value, key) => {
-  //   console.log(value, key);
-  //   setEmployee(pre => ({...pre, [key]: value}));
-  // };
-
   const onInputChange = (value, key) => setEmployee(pre => ({...pre, [key]: value}));
 
   const handleCheck = useCallback(newChecked => setChecked(newChecked), []);
@@ -35,8 +30,6 @@ const CreateModal = () => {
     {label: 'Member', value: 'member'},
     {label: 'Supper admin', value: 'supper_admin'}
   ];
-
-  console.log(employee);
 
   const modalContent = useCallback(
     ({input}) => (
