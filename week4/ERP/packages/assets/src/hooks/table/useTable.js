@@ -1,22 +1,22 @@
-import {Avatar, ButtonGroup, Link} from '@shopify/polaris';
-import React from 'react';
+import {Avatar, ButtonGroup, DataTable, Link} from '@shopify/polaris';
+import React, {useState} from 'react';
 
 /**
  * @param headings
- * @param rows
- * @returns {Table: JSX.Element}
+ * @param columnContentTypes
+ * @param url
+ * @returns {Table: JSX.Element}, data, setData
  */
 export default function useTable({
-  confirmAction,
-  title = 'Are you sure to delete?',
-  HtmlTitle = null,
-  sectioned = true,
-  canCloseAfterFinished = true,
+  columnContentTypes = [],
+  headings = [],
   successCallback = () => {},
   closeCallback = () => {},
   defaultCurrentInput = null
 }) {
-  const rowMarkup = items.map(({id, fullName, englishName, email, role, status, avatar}, index) => [
+  const [data, setData] = useState([]);
+
+  const rowMarkup = data.map(({id, fullName, englishName, email, role, status, avatar}, index) => [
     index + 1,
     <Avatar source={avatar} />,
     <Link>{fullName}</Link>,
@@ -47,13 +47,7 @@ export default function useTable({
   ]);
 
   const Table = (
-    <DataTable
-      columnContentTypes={['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text']}
-      headings={['#', 'Avatar', 'Full name', 'English name', 'Email', 'Role', 'Status', '']}
-      rows={rowMarkup}
-    >
-      {rowMarkup}
-    </DataTable>
+    <DataTable columnContentTypes={columnContentTypes} headings={headings} rows={rowMarkup} />
   );
 
   return {Table};

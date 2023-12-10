@@ -221,9 +221,7 @@ function EmployeesList({items, loading, setModalActionType, openModal, setInputs
           ]}
           headings={['#', 'Avatar', 'Full name', 'English name', 'Email', 'Role', 'Status', '']}
           rows={rowMarkup}
-        >
-          {rowMarkup}
-        </DataTable>
+        />
       )}
     </Card>
   );
