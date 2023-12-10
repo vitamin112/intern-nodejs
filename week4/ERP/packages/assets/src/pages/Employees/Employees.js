@@ -1,24 +1,11 @@
-import {
-  Avatar,
-  Button,
-  ButtonGroup,
-  Card,
-  Checkbox,
-  DataTable,
-  Layout,
-  Link,
-  Loading,
-  Page,
-  Select,
-  TextField
-} from '@shopify/polaris';
+import {Checkbox, Layout, Page, Select, Spinner, TextField} from '@shopify/polaris';
 import {DeleteMajor, EditMinor} from '@shopify/polaris-icons';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import useCreateApi from '../../hooks/api/useCreateApi';
 import useDeleteApi from '../../hooks/api/useDeleteApi';
 import useEditApi from '../../hooks/api/useEditApi';
-import useFetchApi from '../../hooks/api/useFetchApi';
 import useConfirmModal from '../../hooks/popup/useConfirmModal';
+import useTable from '../../hooks/table/useTable';
 
 /**
  * Render a employees page for overview
@@ -39,11 +26,33 @@ export default function Employees() {
   const {creating, handleCreate} = useCreateApi({url: '/employees', fullResp: true});
   const {editing, handleEdit} = useEditApi({url: '/employees', fullResp: true});
   const {deleting, handleDelete} = useDeleteApi({url: '/employees'});
-  const {data, setData, fetchApi, loading: getting} = useFetchApi({
-    url: '/employees'
-  });
   const [inputs, setInputs] = useState(initEmployee);
+
   const [modalActionType, setModalActionType] = useState('');
+  const {Table, setData, loading} = useTable({
+    url: '/employees',
+    columnContentTypes: ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text'],
+    headings: ['#', 'Avatar', 'Full name', 'English name', 'Email', 'Role', 'Status', ''],
+    rowActions: [
+      {
+        icon: EditMinor,
+        onAction: item => {
+          openModal('UPDATE');
+          setModalActionType('UPDATE');
+          setInputs(item);
+        }
+      },
+      {
+        icon: DeleteMajor,
+        destructive: true,
+        onAction: item => {
+          openModal('DELETE');
+          setModalActionType('DELETE');
+          setInputs(item.id);
+        }
+      }
+    ]
+  });
 
   const onInputChange = (value, key) => {
     setInputs(pre => ({...pre, [key]: value}));
@@ -137,13 +146,6 @@ export default function Employees() {
     closeCallback: () => setInputs(initEmployee)
   });
 
-  useEffect(() => {
-    const getData = async () => {
-      return await fetchApi();
-    };
-    return () => getData;
-  }, []);
-
   return (
     <Page
       title="Employees list"
@@ -157,72 +159,10 @@ export default function Employees() {
     >
       <Layout>
         <Layout.Section>
-          <EmployeesList
-            items={data}
-            loading={getting}
-            openModal={openModal}
-            setInputs={setInputs}
-            setModalActionType={setModalActionType}
-          />
+          {loading ? <Spinner /> : Table}
           {modal}
         </Layout.Section>
       </Layout>
     </Page>
-  );
-}
-
-function EmployeesList({items, loading, setModalActionType, openModal, setInputs}) {
-  const rowMarkup = items.map(({id, fullName, englishName, email, role, status, avatar}, index) => [
-    index + 1,
-    <Avatar source={avatar} />,
-    <Link>{fullName}</Link>,
-    englishName,
-    email,
-    role,
-    status ? 'active' : '',
-    <ButtonGroup variant="segmented">
-      <Button
-        icon={EditMinor}
-        onClick={() => {
-          openModal('UPDATE');
-          setModalActionType('UPDATE');
-          setInputs({id, fullName, englishName, email, role, status, avatar});
-        }}
-      />
-      <Button
-        icon={DeleteMajor}
-        id={id}
-        onClick={(a, b) => {
-          openModal('DELETE');
-          setModalActionType('DELETE');
-          setInputs(id);
-        }}
-        destructive
-      />
-    </ButtonGroup>
-  ]);
-
-  return (
-    <Card>
-      {loading ? (
-        <Loading />
-      ) : (
-        <DataTable
-          columnContentTypes={[
-            'text',
-            'text',
-            'text',
-            'text',
-            'text',
-            'text',
-            'text',
-            'text',
-            'text'
-          ]}
-          headings={['#', 'Avatar', 'Full name', 'English name', 'Email', 'Role', 'Status', '']}
-          rows={rowMarkup}
-        />
-      )}
-    </Card>
   );
 }

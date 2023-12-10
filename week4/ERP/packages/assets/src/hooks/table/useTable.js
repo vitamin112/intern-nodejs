@@ -1,54 +1,58 @@
-import {Avatar, ButtonGroup, DataTable, Link} from '@shopify/polaris';
-import React, {useState} from 'react';
+import {Avatar, Button, ButtonGroup, DataTable, EmptyState, Link} from '@shopify/polaris';
+import React, {useEffect} from 'react';
+import useFetchApi from '../api/useFetchApi';
 
 /**
- * @param headings
- * @param columnContentTypes
  * @param url
- * @returns {Table: JSX.Element}, data, setData
+ * @param headings
+ * @param rowActions
+ * @param columnContentTypes
+ * @param emptyString
+ * @returns {Table: JSX.Element, data, setData}
  */
 export default function useTable({
+  url = '',
+  emptyString = 'Nothing here!',
   columnContentTypes = [],
   headings = [],
-  successCallback = () => {},
-  closeCallback = () => {},
-  defaultCurrentInput = null
+  rowActions = []
 }) {
-  const [data, setData] = useState([]);
+  const {data, setData, fetchApi, loading} = useFetchApi({url});
 
-  const rowMarkup = data.map(({id, fullName, englishName, email, role, status, avatar}, index) => [
+  useEffect(() => {
+    const getData = async () => {
+      return await fetchApi();
+    };
+    return () => getData;
+  }, []);
+
+  const rowMarkup = data.map((item, index) => [
     index + 1,
-    <Avatar source={avatar} />,
-    <Link>{fullName}</Link>,
-    englishName,
-    email,
-    role,
-    status ? 'active' : '',
+    <Avatar source={item.avatar} />,
+    <Link>{item.fullName}</Link>,
+    item.englishName,
+    item.email,
+    item.role,
+    item.status ? 'active' : '',
     <ButtonGroup variant="segmented">
-      <Button
-        icon={EditMinor}
-        onClick={() => {
-          openModal('UPDATE');
-          setModalActionType('UPDATE');
-          setInputs({id, fullName, englishName, email, role, status, avatar});
-        }}
-      />
-      <Button
-        icon={DeleteMajor}
-        id={id}
-        onClick={(a, b) => {
-          openModal('DELETE');
-          setModalActionType('DELETE');
-          setInputs(id);
-        }}
-        destructive
-      />
+      {rowActions.map((action, index) => (
+        <Button
+          key={index}
+          children={action.label}
+          icon={action.icon}
+          destructive={action.destructive}
+          onClick={() => action.onAction(item)}
+        />
+      ))}
     </ButtonGroup>
   ]);
 
-  const Table = (
-    <DataTable columnContentTypes={columnContentTypes} headings={headings} rows={rowMarkup} />
-  );
+  const Table =
+    data.length === 0 ? (
+      <EmptyState heading={emptyString} />
+    ) : (
+      <DataTable columnContentTypes={columnContentTypes} headings={headings} rows={rowMarkup} />
+    );
 
-  return {Table};
+  return {Table, data, setData, loading};
 }
