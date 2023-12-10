@@ -27,9 +27,7 @@ const urlEndpoint = [
   }
 ];
 
-const permission = urlEndpoint.filter(({url}) => {
-  return user.permissions.includes(url);
-});
+const permission = urlEndpoint.filter(({url}) => user.permissions.includes(url));
 
 // eslint-disable-next-line react/prop-types
 const Routes = () => (
