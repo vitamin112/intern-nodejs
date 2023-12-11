@@ -13,6 +13,7 @@ export default function apiRouter() {
   router.post('/login', loginController.handleLogin);
   router.post('/importfilecsv', employeeController.handleImportFileCSV);
   router.delete('/employees', employeeController.handleDelete);
+  router.delete('/employees/bulk', employeeController.handleDeleteBulk);
 
   return router;
 }

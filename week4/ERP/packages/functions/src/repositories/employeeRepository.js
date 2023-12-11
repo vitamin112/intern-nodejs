@@ -73,6 +73,21 @@ export async function deleteEmployee(id) {
   }
 }
 
+export async function deleteEmployeeBulk(ids) {
+  try {
+    const result = ids.map(id => {
+      const docRef = collection.doc(id);
+      batch.delete(docRef);
+    });
+
+    await batch.commit();
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
 export async function editEmployee(data) {
   try {
     const userRef = await collection.doc(data.id).set({...data});

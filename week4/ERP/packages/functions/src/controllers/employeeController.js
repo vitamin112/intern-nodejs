@@ -1,6 +1,7 @@
 import {
   createEmployee,
   deleteEmployee,
+  deleteEmployeeBulk,
   editEmployee,
   getEmployeeByEmail,
   getEmployeeById,
@@ -35,6 +36,17 @@ export async function handleDelete(ctx) {
     return (ctx.body = {data: employee, success: true});
   }
   return (ctx.body = {message: 'something went wrong!', success: false});
+}
+
+export async function handleDeleteBulk(ctx) {
+  const {ids} = ctx.params.id || ctx.req.body;
+  console.log(ids);
+  const employee = await deleteEmployeeBulk(ids);
+
+  if (employee) {
+    return (ctx.body = {data: employee, success: true});
+  }
+  // return (ctx.body = {message: 'something went wrong!', success: false});
 }
 
 export async function handleCreate(ctx) {
