@@ -32,9 +32,13 @@ const permission = urlEndpoint.filter(({url}) => user.permissions.includes(url))
 // eslint-disable-next-line react/prop-types
 const Routes = () => (
   <Switch>
-    {permission.map(({url, component}) => (
-      <Route key={url} exact path={url} component={component} />
-    ))}
+    {permission.length > 0 ? (
+      permission.map(({url, component}) => (
+        <Route key={url} exact path={url} component={component} />
+      ))
+    ) : (
+      <Route path="/" component={Home} />
+    )}
     <Route path="*" component={NotFound} />
   </Switch>
 );

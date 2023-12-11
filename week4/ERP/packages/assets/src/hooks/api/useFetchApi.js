@@ -32,7 +32,7 @@ export default function useFetchApi({
       const path = apiUrl || url;
       const separateChar = path.includes('?') ? '&' : '?';
       const query = params ? separateChar + queryString.stringify(params) : '';
-      const resp = await api(path + query);
+      const resp = await api({url: path + query});
 
       if (resp.hasOwnProperty('pageInfo')) setPageInfo(resp.pageInfo);
       if (resp.hasOwnProperty('count')) setCount(resp.count);

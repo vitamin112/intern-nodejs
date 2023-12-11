@@ -33,14 +33,14 @@ if (module.hot) module.hot.accept();
  * @param {object} clientConfig
  * @return {Promise<object>}
  */
-export async function api(
+export async function api({
   url,
   method = 'GET',
   data = {},
   params = {},
   options = {},
   clientConfig = {timeout: 30000}
-) {
+}) {
   const idToken = await auth.currentUser.getIdToken(false);
   const apiUrl = isOutboundLink(url) ? url : `/api${url}`;
   if (!isOutboundLink(url)) {

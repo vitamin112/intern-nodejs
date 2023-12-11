@@ -17,7 +17,6 @@ render(api, {
   root: path.resolve(__dirname, '../../views'),
   viewExt: 'html'
 });
-
 api.use(cors());
 api.use(hybridBodyParser());
 api.use(router().routes()).use(router().allowedMethods());

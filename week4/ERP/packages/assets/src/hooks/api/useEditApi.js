@@ -34,7 +34,7 @@ export default function useEditApi({
       setEditing(prev =>
         typeof newEditing === 'boolean' ? newEditing : {...prev, [newEditing]: true}
       );
-      const resp = await api(url, 'PUT', data);
+      const resp = await api({url, method: 'PUT', data});
       if (resp.success && useToast) {
         setToast(dispatch, resp.message || successMsg);
       }
