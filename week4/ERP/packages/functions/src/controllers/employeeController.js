@@ -4,9 +4,9 @@ import {
   editEmployee,
   getEmployeeByEmail,
   getEmployeeById,
-  getEmployees
+  getEmployees,
+  importCSV
 } from '../repositories/employeeRepository';
-
 export async function handleGetAll(ctx) {
   const employees = await getEmployees();
 
@@ -60,4 +60,16 @@ export async function handleEdit(ctx) {
   }
 
   return (ctx.body = {success: true, message: 'User are not found!', data: employee});
+}
+
+export async function handleImportFileCSV(ctx) {
+  const data = ctx.req.body || [];
+
+  const result = await importCSV(data);
+
+  if (result) {
+    return (ctx.body = {success: true, data: result});
+  }
+
+  return (ctx.body = {error: 'something went wrong!', data: []});
 }

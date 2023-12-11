@@ -1,5 +1,4 @@
 import {Firestore} from '@google-cloud/firestore';
-
 /**
  * @documentation
  *
@@ -9,6 +8,7 @@ import {Firestore} from '@google-cloud/firestore';
 const firestore = new Firestore();
 /** @type CollectionReference */
 const collection = firestore.collection('employees');
+const batch = firestore.batch();
 
 export async function getEmployees() {
   try {
@@ -98,6 +98,22 @@ export async function login(data) {
     return null;
   } catch (e) {
     console.error(e);
+    return null;
+  }
+}
+
+export async function importCSV(data) {
+  try {
+    const result = data.map(item => {
+      const docRef = collection.doc();
+      batch.set(docRef, item);
+      return {...item, id: docRef.id};
+    });
+
+    await batch.commit();
+    return result;
+  } catch (error) {
+    console.log(error);
     return null;
   }
 }

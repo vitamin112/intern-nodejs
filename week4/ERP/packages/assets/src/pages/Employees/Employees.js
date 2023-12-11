@@ -1,6 +1,7 @@
 import {Checkbox, Layout, Page, Select, Spinner, TextField} from '@shopify/polaris';
-import {DeleteMajor, EditMinor} from '@shopify/polaris-icons';
+import {DeleteMajor, EditMinor, ExportMinor, ImportMinor} from '@shopify/polaris-icons';
 import React, {useState} from 'react';
+import FileUploader from '../../components/FileUploader/FileUploader ';
 import useCreateApi from '../../hooks/api/useCreateApi';
 import useDeleteApi from '../../hooks/api/useDeleteApi';
 import useEditApi from '../../hooks/api/useEditApi';
@@ -156,9 +157,22 @@ export default function Employees() {
           setModalActionType('CREATE');
         }
       }}
+      secondaryActions={[
+        {
+          content: 'Import',
+          icon: ImportMinor,
+          onAction: () => {}
+        },
+        {
+          content: 'Export',
+          icon: ExportMinor,
+          onAction: () => {}
+        }
+      ]}
     >
       <Layout>
         <Layout.Section>
+          <FileUploader setData={setData} />
           {loading ? <Spinner /> : Table}
           {modal}
         </Layout.Section>
