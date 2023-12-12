@@ -1,8 +1,8 @@
+import {bodyParser} from '@koa/bodyparser';
 import cors from '@koa/cors';
 import App from 'koa';
 import render from 'koa-ejs';
 import path from 'path';
-import hybridBodyParser from '../middleware/bodyParseMiddleware';
 import createErrorHandler from '../middleware/errorHandler';
 import router from '../routes/api';
 import {handleError} from '../services/errorService';
@@ -18,7 +18,7 @@ render(api, {
   viewExt: 'html'
 });
 api.use(cors());
-api.use(hybridBodyParser());
+api.use(bodyParser({enableRawChecking: true}));
 api.use(router().routes()).use(router().allowedMethods());
 
 api.use(createErrorHandler());
