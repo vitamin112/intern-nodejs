@@ -1,4 +1,13 @@
-import {Checkbox, Layout, Page, Select, Spinner, TextField} from '@shopify/polaris';
+import {
+  Button,
+  ButtonGroup,
+  Checkbox,
+  Layout,
+  Page,
+  Select,
+  Spinner,
+  TextField
+} from '@shopify/polaris';
 import {DeleteMajor, EditMinor} from '@shopify/polaris-icons';
 import React, {useState} from 'react';
 import FileUploader from '../../components/FileUploader/FileUploader ';
@@ -65,17 +74,6 @@ export default function Employees() {
     return handleDelete(payload);
   };
 
-  const modalTitle = ({input}) => {
-    switch (input.current) {
-      case 'CREATE':
-        return 'CREATE A NEW EMPLOYEE';
-      case 'UPDATE':
-        return 'UPDATE EMPLOYEE INFORMATION';
-      default:
-        return 'DELETE EMPLOYEE';
-    }
-  };
-
   const handleSuccess = result => {
     try {
       switch (modalActionType) {
@@ -92,6 +90,17 @@ export default function Employees() {
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const modalTitle = ({input}) => {
+    switch (input.current) {
+      case 'CREATE':
+        return 'CREATE A NEW EMPLOYEE';
+      case 'UPDATE':
+        return 'UPDATE EMPLOYEE INFORMATION';
+      default:
+        return 'DELETE EMPLOYEE';
     }
   };
 
@@ -150,17 +159,23 @@ export default function Employees() {
   return (
     <Page
       title="Employees list"
-      primaryAction={{
-        content: 'Create',
-        onAction: () => {
-          openModal('CREATE');
-          setModalActionType('CREATE');
-        }
-      }}
+      primaryAction={
+        <ButtonGroup>
+          <FileUploader setData={setData} />
+          <Button
+            primary
+            onClick={() => {
+              openModal('CREATE');
+              setModalActionType('CREATE');
+            }}
+          >
+            Create
+          </Button>
+        </ButtonGroup>
+      }
     >
       <Layout>
         <Layout.Section>
-          <FileUploader setData={setData} />
           {loading ? <Spinner /> : Table}
           {modal}
         </Layout.Section>
