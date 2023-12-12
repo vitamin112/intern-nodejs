@@ -1,4 +1,4 @@
-import {Avatar, Button, ButtonGroup, DataTable, EmptyState, Link} from '@shopify/polaris';
+import {Avatar, Button, ButtonGroup, DataTable, EmptyState, Icon, Link} from '@shopify/polaris';
 import {CircleDisabledMajor, CircleTickMajor} from '@shopify/polaris-icons';
 import React, {useEffect} from 'react';
 import useFetchApi from '../api/useFetchApi';
@@ -34,7 +34,10 @@ export default function useTable({
     item.englishName,
     item.email,
     item.role,
-    <Button icon={item.status ? CircleTickMajor : CircleDisabledMajor}></Button>,
+    <Icon
+      source={item.status ? CircleTickMajor : CircleDisabledMajor}
+      color={item.status ? 'success' : 'subdued'}
+    />,
     <ButtonGroup variant="segmented">
       {rowActions.map((action, index) => (
         <Button
