@@ -48,7 +48,7 @@ const FileUploader = ({setData}) => {
     return setFile(file => acceptedFiles[0]);
   }, []);
 
-  const validImageTypes = ['csv', '.csv'];
+  const validImageTypes = ['text/csv'];
   const fileUpload = !file && <DropZone.FileUpload />;
   const uploadedFile = file && (
     <Stack>
