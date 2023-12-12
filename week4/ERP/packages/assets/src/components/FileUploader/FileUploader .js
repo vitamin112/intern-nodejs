@@ -49,7 +49,6 @@ const FileUploader = ({setData}) => {
   }, []);
 
   const validImageTypes = ['csv', '.csv'];
-
   const fileUpload = !file && <DropZone.FileUpload />;
   const uploadedFile = file && (
     <Stack>
@@ -66,9 +65,10 @@ const FileUploader = ({setData}) => {
 
   const {modal, openModal} = useConfirmModal({
     buttonTitle: 'Import',
+    title: 'IMPORT CSV FILE',
     loading: importing,
-    defaultCurrentInput: fileRef,
     disabled: !isValidFile,
+    defaultCurrentInput: fileRef,
     content: (
       <DropZone allowMultiple={false} onDrop={handleDropZoneDrop}>
         {uploadedFile}
