@@ -80,7 +80,11 @@ export async function handleImportFileCSV(ctx) {
   const result = await importCSV(data);
 
   if (result) {
-    return (ctx.body = {success: true, data: result});
+    return (ctx.body = {
+      success: true,
+      data: result,
+      message: `imported ${result.length}/${data.length}`
+    });
   }
 
   return (ctx.body = {error: 'something went wrong!', data: []});

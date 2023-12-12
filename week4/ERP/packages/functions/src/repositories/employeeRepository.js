@@ -1,4 +1,5 @@
 import {Firestore} from '@google-cloud/firestore';
+import {validateCSVFile} from '../helpers/validateCSVFile';
 /**
  * @documentation
  *
@@ -8,7 +9,6 @@ import {Firestore} from '@google-cloud/firestore';
 const firestore = new Firestore();
 /** @type CollectionReference */
 const collection = firestore.collection('employees');
-const batch = firestore.batch();
 
 export async function getEmployees() {
   try {
@@ -74,6 +74,8 @@ export async function deleteEmployee(id) {
 }
 
 export async function deleteEmployeeBulk(ids) {
+  const batch = firestore.batch();
+
   try {
     const result = ids.map(id => {
       const docRef = collection.doc(id);
@@ -119,12 +121,14 @@ export async function login(data) {
 
 export async function importCSV(data) {
   try {
+    data = validateCSVFile(data);
+
+    const batch = firestore.batch();
     const result = data.map(item => {
       const docRef = collection.doc();
       batch.set(docRef, item);
       return {...item, id: docRef.id};
     });
-
     await batch.commit();
     return result;
   } catch (error) {
