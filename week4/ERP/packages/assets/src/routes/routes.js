@@ -11,31 +11,33 @@ const user = getStorageData('user');
 const urlEndpoint = [
   {
     url: '/',
-    component: Home
+    component: Home,
+    role: ['admin', 'member']
   },
   {
     url: '/settings',
-    component: Settings
+    component: Settings,
+    role: ['admin', 'member']
   },
   {
     url: '/profile',
-    component: Profile
+    component: Profile,
+    role: ['admin', 'member']
   },
   {
     url: '/employees',
-    component: Employees
+    component: Employees,
+    role: ['admin']
   }
 ];
 
-const permission = urlEndpoint.filter(({url}) => user.permissions.includes(url));
+const routers = user ? urlEndpoint.filter(({role}) => role.includes(user.role)) : urlEndpoint[0];
 
 // eslint-disable-next-line react/prop-types
 const Routes = () => (
   <Switch>
-    {permission.length > 0 ? (
-      permission.map(({url, component}) => (
-        <Route key={url} exact path={url} component={component} />
-      ))
+    {user ? (
+      routers.map(({url, component}) => <Route key={url} exact path={url} component={component} />)
     ) : (
       <Route path="/" component={Home} />
     )}

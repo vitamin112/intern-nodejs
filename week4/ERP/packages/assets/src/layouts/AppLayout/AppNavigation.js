@@ -24,7 +24,7 @@ export default function AppNavigation() {
 
   const prepareMenu = (menu, item) => {
     if (!item) return menu;
-    if (!user.permissions.includes(item.url)) return menu;
+    if (!item.role.includes(user.role)) return menu;
 
     const {subNavigationItems: subMenus, url, path, includeUrl} = item;
 
@@ -60,6 +60,7 @@ export default function AppNavigation() {
             url: '/',
             icon: HomeMajor,
             label: 'Dashboard',
+            role: ['admin', 'member'],
             selected: location.pathname === getUrl('/'),
             onClick: () => {
               history.push('/');
@@ -69,6 +70,7 @@ export default function AppNavigation() {
             url: '/employees',
             icon: ListMajor,
             label: 'Employees',
+            role: ['admin'],
             selected: location.pathname === getUrl('/employees'),
             onClick: () => {
               history.push('/employees');
@@ -78,6 +80,7 @@ export default function AppNavigation() {
             url: '/samples',
             icon: ShareMinor,
             label: 'Contact',
+            role: ['admin', 'member'],
             selected: location.pathname === getUrl('/samples'),
             onClick: () => {
               history.push('/samples');
@@ -91,6 +94,7 @@ export default function AppNavigation() {
           {
             label: 'Settings',
             url: '/settings',
+            role: ['admin', 'member'],
             icon: SettingsMajor
           }
         ].reduce(prepareMenu, [])}
