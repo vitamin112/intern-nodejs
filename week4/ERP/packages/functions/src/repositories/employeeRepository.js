@@ -101,24 +101,6 @@ export async function editEmployee(data) {
   }
 }
 
-export async function login(data) {
-  try {
-    const userRef = await collection.where('email', '==', data.email).get();
-    const user = userRef.docs[0]?.data();
-
-    if (user && user.role !== '' && user.status) {
-      if (user.avatar === '') {
-        await collection.doc(userRef.docs[0].id).update({avatar: data.avatar});
-      }
-      return {...user, avatar: user.avatar === '' ? data.avatar : user.avatar};
-    }
-    return null;
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-}
-
 export async function importCSV(data) {
   try {
     data = validateCSVFile(data);
