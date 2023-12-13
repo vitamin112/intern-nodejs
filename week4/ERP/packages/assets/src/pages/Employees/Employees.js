@@ -1,13 +1,4 @@
-import {
-  Button,
-  ButtonGroup,
-  Checkbox,
-  Layout,
-  Page,
-  Select,
-  Spinner,
-  TextField
-} from '@shopify/polaris';
+import {Checkbox, Layout, Page, Select, Spinner, TextField} from '@shopify/polaris';
 import {DeleteMajor, EditMinor} from '@shopify/polaris-icons';
 import React, {useState} from 'react';
 import FileUploader from '../../components/FileUploader/FileUploader ';
@@ -161,23 +152,18 @@ export default function Employees() {
   return (
     <Page
       title="Employees list"
-      primaryAction={
-        <ButtonGroup>
-          <FileUploader setData={setData} />
-          <Button
-            primary
-            onClick={() => {
-              openModal(MODAL_ACTION.CREATE);
-              setModalActionType(MODAL_ACTION.CREATE);
-            }}
-          >
-            Create
-          </Button>
-        </ButtonGroup>
-      }
+      primaryAction={{
+        content: 'Create',
+        primary: true,
+        onAction: () => {
+          openModal(MODAL_ACTION.CREATE);
+          setModalActionType(MODAL_ACTION.CREATE);
+        }
+      }}
     >
       <Layout>
         <Layout.Section>
+          <FileUploader setData={setData} />
           {loading ? <Spinner /> : Table}
           {modal}
         </Layout.Section>
