@@ -11,6 +11,7 @@ import {
 import {DeleteMajor, EditMinor} from '@shopify/polaris-icons';
 import React, {useState} from 'react';
 import FileUploader from '../../components/FileUploader/FileUploader ';
+import {MODAL_ACTION} from '../../config/modalActionType';
 import useCreateApi from '../../hooks/api/useCreateApi';
 import useDeleteApi from '../../hooks/api/useDeleteApi';
 import useEditApi from '../../hooks/api/useEditApi';
@@ -47,8 +48,8 @@ export default function Employees() {
       {
         icon: EditMinor,
         onAction: item => {
-          openModal('UPDATE');
-          setModalActionType('UPDATE');
+          openModal(MODAL_ACTION.UPDATE);
+          setModalActionType(MODAL_ACTION.UPDATE);
           setInputs(item);
         }
       },
@@ -56,8 +57,8 @@ export default function Employees() {
         icon: DeleteMajor,
         destructive: true,
         onAction: item => {
-          openModal('DELETE');
-          setModalActionType('DELETE');
+          openModal(MODAL_ACTION.DELETE);
+          setModalActionType(MODAL_ACTION.DELETE);
           setInputs(item.id);
         }
       }
@@ -70,17 +71,17 @@ export default function Employees() {
 
   const handelAction = (action, payload) => {
     if (action === 'CREATE') return handleCreate(payload);
-    if (action === 'UPDATE') return handleEdit(payload);
+    if (action === MODAL_ACTION.UPDATE) return handleEdit(payload);
     return handleDelete(payload);
   };
 
   const handleSuccess = result => {
     try {
       switch (modalActionType) {
-        case 'CREATE':
+        case MODAL_ACTION.CREATE:
           if (result.success) setData(prev => [...prev, result.data]);
           break;
-        case 'UPDATE':
+        case MODAL_ACTION.UPDATE:
           if (result.success)
             setData(prev => prev.map(user => (user.id === result.data.id ? result.data : user)));
           break;
@@ -95,9 +96,9 @@ export default function Employees() {
 
   const modalTitle = ({input}) => {
     switch (input.current) {
-      case 'CREATE':
+      case MODAL_ACTION.CREATE:
         return 'CREATE A NEW EMPLOYEE';
-      case 'UPDATE':
+      case MODAL_ACTION.UPDATE:
         return 'UPDATE EMPLOYEE INFORMATION';
       default:
         return 'DELETE EMPLOYEE';
@@ -145,11 +146,12 @@ export default function Employees() {
   );
 
   const {modal, openModal} = useConfirmModal({
-    buttonTitle: modalActionType === 'DELETE' ? 'Delete' : 'Save',
-    destructive: modalActionType === 'DELETE',
+    buttonTitle: modalActionType === MODAL_ACTION.DELETE ? 'Delete' : 'Save',
+    destructive: modalActionType === MODAL_ACTION.DELETE,
     loading: creating || editing || deleting,
-    content: modalActionType === 'DELETE' ? undefined : modalContent,
-    disabled: modalActionType !== 'DELETE' && (inputs.email === '' || inputs.fullName === ''),
+    content: modalActionType === MODAL_ACTION.DELETE ? undefined : modalContent,
+    disabled:
+      modalActionType !== MODAL_ACTION.DELETE && (inputs.email === '' || inputs.fullName === ''),
     HtmlTitle: modalTitle,
     confirmAction: action => handelAction(action, inputs),
     successCallback: handleSuccess,
@@ -165,8 +167,8 @@ export default function Employees() {
           <Button
             primary
             onClick={() => {
-              openModal('CREATE');
-              setModalActionType('CREATE');
+              openModal(MODAL_ACTION.CREATE);
+              setModalActionType(MODAL_ACTION.CREATE);
             }}
           >
             Create

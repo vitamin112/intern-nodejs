@@ -1,0 +1,5 @@
+export const MODAL_ACTION = {
+  CREATE: 'CREATE',
+  DELETE: 'DELETE',
+  UPDATE: 'UPDATE'
+};
