@@ -1,12 +1,11 @@
-import React, {useState} from 'react';
-import {Frame, Layout, Loading, Scrollable, Toast} from '@shopify/polaris';
-import PropTypes from 'prop-types';
-import {useStore} from '@assets/reducers/storeReducer';
 import {closeToast} from '@assets/actions/storeActions';
-import AppTopBar from '@assets/layouts/AppLayout/AppTopBar';
-import AppNavigation from '@assets/layouts/AppLayout/AppNavigation';
 import {isEmbeddedApp} from '@assets/config/app';
-import Footer from '@assets/components/Footer/Footer';
+import AppNavigation from '@assets/layouts/AppLayout/AppNavigation';
+import AppTopBar from '@assets/layouts/AppLayout/AppTopBar';
+import {useStore} from '@assets/reducers/storeReducer';
+import {Frame, Loading, Scrollable, Toast} from '@shopify/polaris';
+import PropTypes from 'prop-types';
+import React, {useState} from 'react';
 
 /**
  * Render an app layout
@@ -39,12 +38,7 @@ export default function AppLayout({children}) {
         <div className={navigationClass.join(' ')}>
           <AppNavigation />
         </div>
-        <Scrollable className={contentClass.join(' ')}>
-          {children}
-          <Layout>
-            <Footer />
-          </Layout>
-        </Scrollable>
+        <Scrollable className={contentClass.join(' ')}>{children}</Scrollable>
       </div>
       {loading && <Loading />}
       {toast && <Toast onDismiss={() => closeToast(dispatch)} {...toast} />}
