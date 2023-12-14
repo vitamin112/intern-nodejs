@@ -12,6 +12,7 @@ const TriggerContentTab = ({settings, handleInputChange}) => {
       <Select
         label="PAGES RESTRICTION"
         options={options}
+        id="allowShow"
         onChange={handleInputChange}
         value={settings.allowShow}
       />
