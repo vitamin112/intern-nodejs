@@ -2,16 +2,12 @@ import {Button, Checkbox, Layout, RangeSlider} from '@shopify/polaris';
 import React from 'react';
 import DesktopPositionInput from '../DesktopPositionInput/DesktopPositionInput';
 
-const DisplayContentTab = ({settings, setSettings}) => {
+const DisplayContentTab = ({settings, handleInputChange}) => {
   return (
     <>
       <DesktopPositionInput
         value={settings.position}
-        onChange={value =>
-          setSettings(prev => {
-            return {...prev, ['position']: value};
-          })
-        }
+        onChange={value => handleInputChange(value, 'position')}
         label={'Desktop Position'}
         helpText={'The display position of pop on your website '}
       />
@@ -19,33 +15,24 @@ const DisplayContentTab = ({settings, setSettings}) => {
         label="Hide time ago"
         checked={settings.hideTimeAgo}
         id={'hideTimeAgo'}
-        onChange={(value, id) =>
-          setSettings(prev => {
-            return {...prev, [id]: value};
-          })
-        }
+        onChange={handleInputChange}
       />
       <Checkbox
         label="Truncate content text"
+        id="truncateProductName"
         helpText="If you product name is long for one line, it will be truncated to 'Product na..'"
         checked={settings.truncateProductName}
-        onChange={value =>
-          setSettings(prev => {
-            return {...prev, ['truncateProductName']: value};
-          })
-        }
+        onChange={handleInputChange}
       />
       <Layout>
         <Layout.Section oneThird>
           <RangeSlider
             output
             label="Display duration"
+            id="displayDuration"
+            max={5}
             value={settings.displayDuration}
-            onChange={value =>
-              setSettings(prev => {
-                return {...prev, ['displayDuration']: value};
-              })
-            }
+            onChange={handleInputChange}
             suffix={
               <p
                 style={{
@@ -62,12 +49,10 @@ const DisplayContentTab = ({settings, setSettings}) => {
           <RangeSlider
             output
             label="Time before the first pop"
+            id="firstDelay"
+            max={10}
             value={settings.firstDelay}
-            onChange={value =>
-              setSettings(prev => {
-                return {...prev, ['firstDelay']: value};
-              })
-            }
+            onChange={handleInputChange}
             suffix={
               <p
                 style={{
@@ -86,12 +71,10 @@ const DisplayContentTab = ({settings, setSettings}) => {
           <RangeSlider
             output
             label="Gap time between two pops"
+            id="popsInterval"
             value={settings.popsInterval}
-            onChange={value =>
-              setSettings(prev => {
-                return {...prev, ['popsInterval']: value};
-              })
-            }
+            onChange={handleInputChange}
+            max={2}
             suffix={
               <p
                 style={{
@@ -109,11 +92,9 @@ const DisplayContentTab = ({settings, setSettings}) => {
             output
             label="Maximum of popups"
             value={settings.maxPopsDisplay}
-            onChange={value =>
-              setSettings(prev => {
-                return {...prev, ['maxPopsDisplay']: value};
-              })
-            }
+            id="maxPopsDisplay"
+            max={20}
+            onChange={handleInputChange}
             suffix={
               <p
                 style={{
