@@ -1,11 +1,11 @@
-import {Button, Checkbox, FormLayout, RangeSlider} from '@shopify/polaris';
+import {Button, Checkbox, FormLayout, Heading, RangeSlider} from '@shopify/polaris';
 import React from 'react';
 import DesktopPositionInput from '../DesktopPositionInput/DesktopPositionInput';
 
 const DisplayContentTab = ({settings, handleInputChange}) => {
   return (
     <FormLayout>
-      <h2>APPEARANCE</h2>
+      <Heading>APPEARANCE</Heading>
       <DesktopPositionInput
         value={settings.position}
         onChange={value => handleInputChange(value, 'position')}
@@ -26,7 +26,7 @@ const DisplayContentTab = ({settings, handleInputChange}) => {
         onChange={handleInputChange}
       />
 
-      <h2>TIMING</h2>
+      <Heading>TIMING</Heading>
 
       <FormLayout.Group>
         <RangeSlider
