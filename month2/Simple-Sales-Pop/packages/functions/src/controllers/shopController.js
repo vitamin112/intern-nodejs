@@ -1,6 +1,6 @@
-import {getCurrentShop} from '../helpers/auth';
 import {getShopInfoByShopId} from '@functions/repositories/shopInfoRepository';
 import {getShopById} from '@functions/repositories/shopRepository';
+import {getCurrentShop} from '../helpers/auth';
 
 /**
  * @param ctx
