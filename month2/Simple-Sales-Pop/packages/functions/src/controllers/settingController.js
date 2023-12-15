@@ -9,7 +9,7 @@ export async function getSettings(ctx) {
   const shopId = getCurrentShop(ctx);
   const settings = await getShopSettingByShopId(shopId);
   if (settings) {
-    return (ctx.body = {settings: settings, success: true});
+    return (ctx.body = {data: settings, success: true});
   }
   return (ctx.body = {error: 'Something went wrong!'});
 }

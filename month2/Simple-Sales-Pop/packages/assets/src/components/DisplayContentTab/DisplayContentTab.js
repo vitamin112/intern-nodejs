@@ -1,10 +1,11 @@
-import {Button, Checkbox, Layout, RangeSlider} from '@shopify/polaris';
+import {Button, Checkbox, FormLayout, RangeSlider} from '@shopify/polaris';
 import React from 'react';
 import DesktopPositionInput from '../DesktopPositionInput/DesktopPositionInput';
 
 const DisplayContentTab = ({settings, handleInputChange}) => {
   return (
-    <>
+    <FormLayout>
+      <h2>APPEARANCE</h2>
       <DesktopPositionInput
         value={settings.position}
         onChange={value => handleInputChange(value, 'position')}
@@ -24,93 +25,57 @@ const DisplayContentTab = ({settings, handleInputChange}) => {
         checked={settings.truncateProductName}
         onChange={handleInputChange}
       />
-      <Layout>
-        <Layout.Section oneThird>
-          <RangeSlider
-            output
-            label="Display duration"
-            id="displayDuration"
-            max={5}
-            value={settings.displayDuration}
-            onChange={handleInputChange}
-            suffix={
-              <p
-                style={{
-                  minWidth: '24px',
-                  textAlign: 'right'
-                }}
-              >
-                <Button disabled>{settings.displayDuration} second(s)</Button>
-              </p>
-            }
-          />
-        </Layout.Section>
-        <Layout.Section oneThird>
-          <RangeSlider
-            output
-            label="Time before the first pop"
-            id="firstDelay"
-            max={10}
-            value={settings.firstDelay}
-            onChange={handleInputChange}
-            suffix={
-              <p
-                style={{
-                  minWidth: '24px',
-                  textAlign: 'right'
-                }}
-              >
-                <Button disabled>{settings.firstDelay} second(s)</Button>
-              </p>
-            }
-          />
-        </Layout.Section>
-      </Layout>
-      <Layout>
-        <Layout.Section oneThird>
-          <RangeSlider
-            output
-            label="Gap time between two pops"
-            id="popsInterval"
-            value={settings.popsInterval}
-            onChange={handleInputChange}
-            max={2}
-            suffix={
-              <p
-                style={{
-                  minWidth: '24px',
-                  textAlign: 'right'
-                }}
-              >
-                <Button disabled>{settings.popsInterval} second(s)</Button>
-              </p>
-            }
-          />
-        </Layout.Section>
-        <Layout.Section oneThird>
-          <RangeSlider
-            output
-            label="Maximum of popups"
-            value={settings.maxPopsDisplay}
-            id="maxPopsDisplay"
-            max={20}
-            onChange={handleInputChange}
-            suffix={
-              <p
-                style={{
-                  minWidth: '24px',
-                  textAlign: 'right'
-                }}
-              >
-                <Button disabled>
-                  <strong>{settings.maxPopsDisplay} </strong>second(s)
-                </Button>
-              </p>
-            }
-          />
-        </Layout.Section>
-      </Layout>
-    </>
+
+      <h2>TIMING</h2>
+
+      <FormLayout.Group>
+        <RangeSlider
+          output
+          helpText="How long each pop can display on your page"
+          label="Display duration"
+          id="displayDuration"
+          max={20}
+          value={settings.displayDuration}
+          onChange={handleInputChange}
+          suffix={<Button disabled>{settings.displayDuration} second(s)</Button>}
+        />
+
+        <RangeSlider
+          output
+          helpText="The delay time before the first notification."
+          label="Time before the first pop"
+          id="firstDelay"
+          max={40}
+          value={settings.firstDelay}
+          onChange={handleInputChange}
+          suffix={<Button disabled>{settings.firstDelay} second(s)</Button>}
+        />
+      </FormLayout.Group>
+
+      <FormLayout.Group>
+        <RangeSlider
+          output
+          helpText="The time interval between two pops"
+          label="Gap time between two pops"
+          id="popsInterval"
+          value={settings.popsInterval}
+          onChange={handleInputChange}
+          max={10}
+          suffix={<Button disabled>{settings.popsInterval} second(s)</Button>}
+        />
+
+        <RangeSlider
+          output
+          helpText="The maximum number of popups to show after page loading, maximum number is 80"
+          label="Maximum of popups"
+          value={settings.maxPopsDisplay}
+          id="maxPopsDisplay"
+          max={80}
+          onChange={handleInputChange}
+          suffix={<Button disabled>{settings.maxPopsDisplay} second(s)</Button>}
+        />
+      </FormLayout.Group>
+    </FormLayout>
   );
 };
 

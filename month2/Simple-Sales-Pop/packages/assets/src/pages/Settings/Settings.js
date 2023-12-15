@@ -1,27 +1,26 @@
-import {useStore} from '@assets/reducers/storeReducer';
 import {Card, Layout, Page, Spinner, Tabs} from '@shopify/polaris';
 import React, {useCallback, useEffect, useState} from 'react';
 import DisplayTabContent from '../../components/DisplayContentTab/DisplayContentTab';
 import NotificationPopup from '../../components/NotificationPopup/NotificationPopup';
 import TriggerTabContent from '../../components/TriggerContentTab/TriggerContentTab';
 import {defaultSettings} from '../../config/setting';
-import {api} from '../../helpers';
 import useEditApi from '../../hooks/api/useEditApi';
+import useFetchApi from '../../hooks/api/useFetchApi';
 
 /**
  * @return {JSX.Element}
  */
 export default function Settings() {
-  const {state} = useStore();
   const [selected, setSelected] = useState(0);
-  const [getting, setGetting] = useState(true);
-  const [settings, setSettings] = useState({...defaultSettings, shopId: state.shop?.id});
   const {editing, handleEdit} = useEditApi({url: '/settings'});
+  const {fetchApi, data: settings, setData: setSettings, loading} = useFetchApi({
+    url: '/settings',
+    defaultData: {defaultSettings}
+  });
 
   const getSettings = async () => {
-    const resp = await api('/settings');
-    setGetting(false);
-    if (resp.success) setSettings(resp.settings);
+    const resp = await fetchApi('/settings');
+    console.log(resp);
   };
 
   useEffect(() => {
@@ -37,7 +36,7 @@ export default function Settings() {
   const tabs = [
     {
       id: 'all-customers-1',
-      content: 'display',
+      content: 'Display',
       children: <DisplayTabContent settings={settings} handleInputChange={handleInputChange} />,
       panelID: 'all-customers-content-1'
     },
@@ -62,12 +61,12 @@ export default function Settings() {
       subtitle="Decide how your notifications will display"
       fullWidth
     >
-      {getting ? (
+      {loading ? (
         <Spinner />
       ) : (
         <Layout>
           <Layout.Section oneThird>
-            <NotificationPopup />
+            <NotificationPopup timestamp={settings.hideTimeAgo ? '' : '1 day ago'} />
           </Layout.Section>
 
           <Layout.Section>
