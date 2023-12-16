@@ -52,6 +52,10 @@
         "function": "authSa"
       },
       {
+        "source": "/webhook/**",
+        "function": "webhook"
+      },
+      {
         "source": "/embed/**",
         "destination": "/embed.html"
       },

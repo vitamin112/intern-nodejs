@@ -7,6 +7,11 @@ import 'isomorphic-fetch';
 import App from 'koa';
 import render from 'koa-ejs';
 import path from 'path';
+import {defaultSettings} from '../const/setting';
+import {createNotifications} from '../repositories/notificationRepository';
+import {createShopSetting} from '../repositories/settingRepository';
+import {getNotifications} from '../services/notificationService';
+import {getShopifyShop} from '../services/shopifyService';
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
@@ -43,6 +48,21 @@ app.use(
     },
     hostName: appConfig.baseUrl,
     isEmbeddedApp: true,
+    afterInstall: async ctx => {
+      const {shopify, shopData} = await getShopifyShop(ctx);
+      const notifications = await getNotifications(shopify, shopData.id);
+      await createShopSetting(defaultSettings, shopData.id);
+      await createNotifications(notifications);
+
+      shopify.webhook.create({
+        address: ' https://9f19-171-224-180-176.ngrok-free.app/webhook/newOrder',
+        topic: 'orders/create',
+        format: 'json'
+      });
+      return (ctx.body = {
+        success: true
+      });
+    },
     afterThemePublish: ctx => {
       // Publish assets when theme is published or changed here
       return (ctx.body = {
