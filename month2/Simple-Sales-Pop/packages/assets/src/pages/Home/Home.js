@@ -1,4 +1,3 @@
-import {useStore} from '@assets/reducers/storeReducer';
 import {Layout, Page, SettingToggle, TextStyle} from '@shopify/polaris';
 import React, {useState} from 'react';
 
@@ -10,7 +9,6 @@ import React, {useState} from 'react';
  */
 export default function Home() {
   const [enabled, setEnabled] = useState(false);
-  const {dispatch} = useStore();
 
   return (
     <Page title="Home">

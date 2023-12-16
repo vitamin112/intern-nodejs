@@ -1,8 +1,19 @@
 import {getShopById} from '@avada/shopify-auth';
 import {getCurrentUserShopId} from '@avada/shopify-auth/build/authentication';
 import Shopify from 'shopify-api-node';
+import {getCurrentShop} from '../helpers/auth';
+import {getNotificationsByShopId} from '../repositories/notificationRepository';
 
 export async function getNotifications(ctx) {
+  const shopId = getCurrentShop(ctx);
+  const query = ctx.req.query;
+
+  const {notifications, pageInfo} = await getNotificationsByShopId(shopId, query);
+
+  ctx.body = {data: notifications, success: true, pageInfo};
+}
+
+export async function createNotification(ctx) {
   const shopId = getCurrentUserShopId(ctx);
   const shopData = await getShopById(shopId);
 

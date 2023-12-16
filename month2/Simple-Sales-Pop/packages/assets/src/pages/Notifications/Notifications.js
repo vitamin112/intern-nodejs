@@ -1,8 +1,8 @@
-import {useStore} from '@assets/reducers/storeReducer';
 import {Button, Layout, Page, ResourceList, Stack} from '@shopify/polaris';
 import {ChevronLeftMinor, ChevronRightMinor} from '@shopify/polaris-icons';
 import React, {useState} from 'react';
 import NotificationPopup from '../../components/NotificationPopup/NotificationPopup';
+import usePaginate from '../../hooks/api/usePaginate';
 
 /**
  * Render a home page for overview
@@ -11,13 +11,21 @@ import NotificationPopup from '../../components/NotificationPopup/NotificationPo
  * @constructor
  */
 export default function Notifications() {
-  const {dispatch} = useStore();
-  const items = Array.from({length: 15}, (_, index) => ({
-    id: index,
-    name: `Item ${index + 1}`
-  }));
+  const {
+    data = [],
+    fetchApi,
+    prevPage = false,
+    nextPage = false,
+    onQueryChange,
+    pageInfo,
+    loading
+  } = usePaginate({
+    url: '/notifications',
+    defaultSort: 'timestamp:desc',
+    defaultLimit: 3
+  });
 
-  const [sortValue, setSortValue] = useState('DATE_MODIFIED_DESC');
+  const [sortValue, setSortValue] = useState('timestamp:asc');
   const [selectedItems, setSelectedItems] = useState([]);
 
   const resourceName = {
@@ -29,7 +37,14 @@ export default function Notifications() {
     <ResourceList.Item id={item.id} accessibilityLabel={`View details for ${item.name}`}>
       <Stack distribution="fill">
         <Stack.Item>
-          <NotificationPopup />
+          <NotificationPopup
+            productImage={item.productImage}
+            firstName={item.firstName}
+            city={item.city}
+            country={item.country}
+            productName={item.productName}
+            timestamp={item.timestamp}
+          />
         </Stack.Item>
         <Stack.Item>
           <Stack distribution="trailing">
@@ -42,49 +57,36 @@ export default function Notifications() {
       </Stack>
     </ResourceList.Item>
   );
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
-  const totalItems = items.length;
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedItems = items.slice(startIndex, endIndex);
-  const handlePageChange = newPage => {
-    setCurrentPage(newPage);
-  };
 
   return (
     <Page title="Notifications" subtitle="List of sales notification from Shopify">
       <Layout>
         <Layout.Section>
           <ResourceList
+            loading={loading}
             selectedItems={selectedItems}
             onSelectionChange={setSelectedItems}
             selectable
             resourceName={resourceName}
-            items={paginatedItems}
+            items={data}
             renderItem={renderItem}
             sortValue={sortValue}
-            totalItemsCount={items.length}
+            totalItemsCount={data.length}
             sortOptions={[
-              {label: 'Newest update', value: 'DATE_MODIFIED_DESC'},
-              {label: 'Oldest update', value: 'DATE_MODIFIED_ASC'}
+              {label: 'Newest update', value: 'timestamp:asc'},
+              {label: 'Oldest update', value: 'timestamp:desc'}
             ]}
             onSortChange={selected => {
               setSortValue(selected);
-              console.log(`Sort option changed to ${selected}.`);
+              onQueryChange('sort', selected, true);
             }}
           />
           <Stack distribution="center" spacing="loose">
+            <Button icon={ChevronLeftMinor} disabled={pageInfo.hasPre} onClick={prevPage}></Button>
             <Button
-              icon={ChevronLeftMinor}
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-            ></Button>
-            <Button
+              disabled={pageInfo.hasNext}
               icon={ChevronRightMinor}
-              disabled={endIndex >= totalItems}
-              onClick={() => handlePageChange(currentPage + 1)}
+              onClick={nextPage}
             ></Button>
           </Stack>
         </Layout.Section>
