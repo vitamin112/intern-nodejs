@@ -1,21 +1,11 @@
 import createErrorHandler from '@functions/middleware/errorHandler';
 import webhookRouter from '@functions/routes/webhook';
-import * as errorService from '@functions/services/errorService';
 import App from 'koa';
-import render from 'koa-ejs';
-import path from 'path';
+import * as errorService from '@functions/services/errorService';
 
 // Initialize all demand configuration for an application
 const webhook = new App();
 webhook.proxy = true;
-
-render(webhook, {
-  cache: true,
-  debug: false,
-  layout: false,
-  root: path.resolve(__dirname, '../../views'),
-  viewExt: 'html'
-});
 
 webhook.use(createErrorHandler());
 

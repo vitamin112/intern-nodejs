@@ -39,7 +39,7 @@ export async function getNotificationsByShopId(id, query) {
 }
 
 /**
- * create shop notification
+ * create default notification
  *
  * @param {Object} data
  * @return {Promise<FirebaseFirestore.DocumentData>}
@@ -47,11 +47,42 @@ export async function getNotificationsByShopId(id, query) {
 export async function createNotifications(data) {
   const batch = firestore.batch();
   try {
-    data.map(item => {
-      const docRef = notificationRef.doc();
-      batch.set(docRef, item);
-    });
+    const docRef = notificationRef.doc();
+    batch.set(docRef, item);
+
     await batch.commit();
+
+    return true;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+/**
+ * create new notification
+ *
+ * @param {Object} data
+ * @return {Promise<FirebaseFirestore.DocumentData>}
+ */
+export async function createNewNotification(data) {
+  try {
+    const product = await firestore
+      .collection('products')
+      .doc(data.line_items[0].product_id)
+      .get();
+    const img = product.image;
+
+    await notificationRef.doc().set({
+      firstName: data.billing_address.first_name || '',
+      city: data.billing_address.city || '',
+      country: data.billing_address.country || '',
+      shopId: id || '',
+      timestamp: getFormattedTimestamp(data.created_at) || '',
+      productName: data.line_items[0].title || '',
+      productId: data.line_items[0].product_id || null,
+      productImage: img
+    });
 
     return true;
   } catch (error) {

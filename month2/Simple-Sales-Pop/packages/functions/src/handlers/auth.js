@@ -55,7 +55,7 @@ app.use(
       await createNotifications(notifications);
 
       shopify.webhook.create({
-        address: ' https://9f19-171-224-180-176.ngrok-free.app/webhook/newOrder',
+        address: 'https://0edc-116-96-47-55.ngrok-free.app/webhook/newOrder',
         topic: 'orders/create',
         format: 'json'
       });

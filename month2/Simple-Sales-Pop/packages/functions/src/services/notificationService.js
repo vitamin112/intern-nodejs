@@ -3,7 +3,6 @@
  * @param {String}
  * @return {Promise<void>}
  */
-
 export async function getNotifications(shopify, id) {
   const getFormattedTimestamp = dateString => (dateString ? new Date(dateString).getTime() : null);
 

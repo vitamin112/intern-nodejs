@@ -1,10 +1,9 @@
-import * as notificationController from '@functions/controllers/notificationController';
 import Router from 'koa-router';
+import {createNotification} from '../controllers/webhookOrderController';
 
 export default function webhookRouter() {
   const router = new Router({prefix: '/webhook'});
-
-  router.get('/newOrder', notificationController.getNotifications);
+  router.post('/newOrder', createNotification);
 
   return router;
 }
