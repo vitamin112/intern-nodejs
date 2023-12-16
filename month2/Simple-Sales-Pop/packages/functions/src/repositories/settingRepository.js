@@ -51,3 +51,20 @@ export async function updateShopSetting(data, id) {
     return null;
   }
 }
+
+/**
+ * create shop setting
+ *
+ * @param {Object} data
+ * @return {Promise<FirebaseFirestore.DocumentData>}
+ */
+export async function createShopSetting(data, id) {
+  try {
+    const doc = shopSettingRef.doc();
+    await doc.set({...data, shopId: id});
+    return true;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}

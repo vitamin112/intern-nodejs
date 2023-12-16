@@ -3,7 +3,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import DisplayTabContent from '../../components/DisplayContentTab/DisplayContentTab';
 import NotificationPopup from '../../components/NotificationPopup/NotificationPopup';
 import TriggerTabContent from '../../components/TriggerContentTab/TriggerContentTab';
-import {defaultSettings} from '../../config/setting';
 import useEditApi from '../../hooks/api/useEditApi';
 import useFetchApi from '../../hooks/api/useFetchApi';
 
@@ -14,13 +13,11 @@ export default function Settings() {
   const [selected, setSelected] = useState(0);
   const {editing, handleEdit} = useEditApi({url: '/settings'});
   const {fetchApi, data: settings, setData: setSettings, loading} = useFetchApi({
-    url: '/settings',
-    defaultData: {defaultSettings}
+    url: '/settings'
   });
 
   const getSettings = async () => {
-    const resp = await fetchApi('/settings');
-    console.log(resp);
+    await fetchApi();
   };
 
   useEffect(() => {
