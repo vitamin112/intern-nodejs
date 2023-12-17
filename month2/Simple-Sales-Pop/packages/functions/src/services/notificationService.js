@@ -1,6 +1,6 @@
 /**
- * @param {Object}
- * @param {String}
+ * @param {Object} shopify
+ * @param {String} shopId
  * @return {Promise<void>}
  */
 export async function getNotifications(shopify, id) {
@@ -23,4 +23,32 @@ export async function getNotifications(shopify, id) {
     })
   );
   return notifications;
+}
+
+/**
+ * @param {Object} shopify
+ * @param {String} shopId
+ * @return {Promise<void>}
+ */
+export async function getNotification(shopify, id) {
+  try {
+    const getFormattedTimestamp = dateString =>
+      dateString ? new Date(dateString).getTime() : null;
+
+    const product = await shopify.product.get(data.line_items[0].product_id);
+
+    return {
+      firstName: data.billing_address.first_name || '',
+      city: data.billing_address.city || '',
+      country: data.billing_address.country || '',
+      shopId: id || '',
+      timestamp: getFormattedTimestamp(data.created_at) || '',
+      productName: data.line_items[0].title || '',
+      productId: data.line_items[0].product_id || null,
+      productImage: product.image.src
+    };
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
 }

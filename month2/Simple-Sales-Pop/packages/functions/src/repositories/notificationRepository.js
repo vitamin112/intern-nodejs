@@ -1,5 +1,6 @@
-import {presentDataFromDoc} from '@avada/firestore-utils';
+import {presentDataAndFormatDate, presentDataFromDoc} from '@avada/firestore-utils';
 import {Firestore} from '@google-cloud/firestore';
+import Shopify from 'shopify-api-node';
 
 const firestore = new Firestore();
 /** @type CollectionReference */
@@ -11,15 +12,16 @@ const notificationRef = firestore.collection('notifications');
  * @param {string} id
  * @return {Promise<FirebaseFirestore.DocumentData>}
  */
-export async function getNotificationsByShopId(id, query) {
+export async function getNotificationsByShopId(
+  id,
+  {limit = 30, page = 1, searchKey = '', sort = 'timestamp:desc'}
+) {
   try {
-    const {limit = 30, page = 1, searchKey = '', sort = 'timestamp:asc'} = query;
-
     const [sortValue, sortOptions] = sort.split(':');
     const shopSnap = await notificationRef.where('shopId', '==', id);
 
     const docs = await shopSnap
-      .orderBy(sortValue, sortOptions ? sortOptions : 'asc')
+      .orderBy(sortValue, sortOptions ? sortOptions : 'desc')
       .limit(limit ? +limit : 30)
       .offset((page - 1) * limit)
       .get();
@@ -67,22 +69,7 @@ export async function createNotifications(data) {
  */
 export async function createNewNotification(data) {
   try {
-    const product = await firestore
-      .collection('products')
-      .doc(data.line_items[0].product_id)
-      .get();
-    const img = product.image;
-
-    await notificationRef.doc().set({
-      firstName: data.billing_address.first_name || '',
-      city: data.billing_address.city || '',
-      country: data.billing_address.country || '',
-      shopId: id || '',
-      timestamp: getFormattedTimestamp(data.created_at) || '',
-      productName: data.line_items[0].title || '',
-      productId: data.line_items[0].product_id || null,
-      productImage: img
-    });
+    await notificationRef.doc().set(data);
 
     return true;
   } catch (error) {

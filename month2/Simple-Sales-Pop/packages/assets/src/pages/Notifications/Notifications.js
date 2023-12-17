@@ -25,7 +25,7 @@ export default function Notifications() {
     defaultLimit: 3
   });
 
-  const [sortValue, setSortValue] = useState('timestamp:asc');
+  const [sortValue, setSortValue] = useState('timestamp:desc');
   const [selectedItems, setSelectedItems] = useState([]);
 
   const resourceName = {
@@ -71,10 +71,9 @@ export default function Notifications() {
             items={data}
             renderItem={renderItem}
             sortValue={sortValue}
-            totalItemsCount={data.length}
             sortOptions={[
-              {label: 'Newest update', value: 'timestamp:asc'},
-              {label: 'Oldest update', value: 'timestamp:desc'}
+              {label: 'Newest update', value: 'timestamp:desc'},
+              {label: 'Oldest update', value: 'timestamp:asc'}
             ]}
             onSortChange={selected => {
               setSortValue(selected);
