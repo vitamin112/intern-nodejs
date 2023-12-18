@@ -52,17 +52,31 @@ import NotificationPopup from './components/NotificationPopup/NotificationPopup'
     );
     return await response.json();
   }
+
   const result = await getData();
   const {setting} = result.data;
   const {notifications} = result.data;
 
-  const container = document.createElement('div');
-  container.id = 'container';
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms * 1000));
+  }
 
-  document.body.appendChild(container);
+  async function showPopupsSequentially(notifications) {
+    for (let i = 0; i < notifications.length; i++) {
+      await delay(i === 0 ? setting.firstDelay : setting.popsInterval);
 
-  return render(
-    <NotificationPopup setting={setting} data={notifications[0]} />,
-    document.getElementById('container')
-  );
+      const container = document.createElement('div');
+      container.id = 'container';
+
+      document.body.appendChild(container);
+      render(
+        <NotificationPopup setting={setting} data={notifications[i]} />,
+        document.getElementById('container')
+      );
+      await delay(setting.displayDuration);
+      document.body.removeChild(container);
+    }
+  }
+
+  showPopupsSequentially(notifications);
 })();
