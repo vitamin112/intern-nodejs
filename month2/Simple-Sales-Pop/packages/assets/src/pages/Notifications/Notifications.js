@@ -3,6 +3,7 @@ import {ChevronLeftMinor, ChevronRightMinor} from '@shopify/polaris-icons';
 import React, {useState} from 'react';
 import NotificationPopup from '../../components/NotificationPopup/NotificationPopup';
 import usePaginate from '../../hooks/api/usePaginate';
+import moment from 'moment';
 
 /**
  * Render a home page for overview
@@ -33,30 +34,39 @@ export default function Notifications() {
     plural: 'products'
   };
 
-  const renderItem = item => (
-    <ResourceList.Item id={item.id} accessibilityLabel={`View details for ${item.name}`}>
-      <Stack distribution="fill">
-        <Stack.Item>
-          <NotificationPopup
-            productImage={item.productImage}
-            firstName={item.firstName}
-            city={item.city}
-            country={item.country}
-            productName={item.productName}
-            timestamp={item.timestamp}
-          />
-        </Stack.Item>
-        <Stack.Item>
-          <Stack distribution="trailing">
-            <Stack.Item>From March 8</Stack.Item>
-          </Stack>
-          <Stack distribution="trailing">
-            <Stack.Item>2021</Stack.Item>
-          </Stack>
-        </Stack.Item>
-      </Stack>
-    </ResourceList.Item>
-  );
+  const renderItem = item => {
+    const momentObj = moment(item.timestamp);
+    const timeAgo = momentObj.fromNow();
+    let date = new Date(item.timestamp);
+    var options = {month: 'long', day: 'numeric'};
+
+    var year = date.getFullYear();
+    var formattedDate = date.toLocaleDateString('en-US', options);
+    return (
+      <ResourceList.Item id={item.id} accessibilityLabel={`View details for ${item.name}`}>
+        <Stack distribution="fill">
+          <Stack.Item>
+            <NotificationPopup
+              productImage={item.productImage}
+              firstName={item.firstName}
+              city={item.city}
+              country={item.country}
+              productName={item.productName}
+              timestamp={timeAgo}
+            />
+          </Stack.Item>
+          <Stack.Item>
+            <Stack distribution="trailing">
+              <Stack.Item>From {formattedDate}</Stack.Item>
+            </Stack>
+            <Stack distribution="trailing">
+              <Stack.Item>{year}</Stack.Item>
+            </Stack>
+          </Stack.Item>
+        </Stack>
+      </ResourceList.Item>
+    );
+  };
 
   return (
     <Page title="Notifications" subtitle="List of sales notification from Shopify">
