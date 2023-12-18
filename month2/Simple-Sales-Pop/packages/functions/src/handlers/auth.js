@@ -54,11 +54,17 @@ app.use(
       await createShopSetting(defaultSettings, shopData.id);
       await createNotifications(notifications);
 
-      shopify.webhook.create({
-        address: 'https://0edc-116-96-47-55.ngrok-free.app/webhook/newOrder',
+      await shopify.webhook.create({
+        address: 'https://b6be-116-96-47-55.ngrok-free.app',
         topic: 'orders/create',
         format: 'json'
       });
+
+      await shopify.scriptTag.create({
+        event: 'onload',
+        src: 'https://localhost:3000/scripttag/index.min.js'
+      });
+
       return (ctx.body = {
         success: true
       });

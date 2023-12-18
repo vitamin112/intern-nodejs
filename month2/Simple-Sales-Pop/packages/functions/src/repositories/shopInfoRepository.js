@@ -22,3 +22,21 @@ export async function getShopInfoByShopId(id) {
   const [doc] = docs.docs;
   return presentDataAndFormatDate(doc);
 }
+
+/**
+ * Get shop info by given shop domain
+ *
+ * @param {string} domain
+ * @return {Promise<FirebaseFirestore.DocumentData>}
+ */
+export async function getShopInfoByShopDomain(domain) {
+  const docs = await shopInfosRef
+    .where('domain', '==', domain)
+    .limit(1)
+    .get();
+  if (docs.empty) {
+    return null;
+  }
+  const [doc] = docs.docs;
+  return presentDataAndFormatDate(doc);
+}

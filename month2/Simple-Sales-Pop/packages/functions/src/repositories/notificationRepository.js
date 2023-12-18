@@ -49,9 +49,10 @@ export async function getNotificationsByShopId(
 export async function createNotifications(data) {
   const batch = firestore.batch();
   try {
-    const docRef = notificationRef.doc();
-    batch.set(docRef, item);
-
+    data.map(item => {
+      const docRef = notificationRef.doc();
+      batch.set(docRef, item);
+    });
     await batch.commit();
 
     return true;
