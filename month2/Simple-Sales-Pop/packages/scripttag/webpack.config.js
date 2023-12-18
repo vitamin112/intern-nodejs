@@ -1,10 +1,9 @@
 const path = require('path');
 const Dotenv = require('dotenv-webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV === 'production';
-const environmentPath = !process.env.ENVIRONMENT
-  ? '.env'
-  : `.env.${process.env.ENVIRONMENT}`;
+const environmentPath = !process.env.ENVIRONMENT ? '.env' : `.env.${process.env.ENVIRONMENT}`;
 
 /**
  * @link https://stackoverflow.com/questions/47830273/babel-plugin-preset-files-are-not-allowed-to-export-objects-only-functions
@@ -22,6 +21,18 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader'
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        use: 'file-loader'
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: ['style-loader', 'css-loader', 'sass-loader']
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
       }
     ]
   },
@@ -35,6 +46,12 @@ module.exports = {
       defaults: '.env.example',
       systemvars: true,
       path: path.resolve(__dirname, environmentPath)
+    }),
+    new HtmlWebpackPlugin({
+      filename: `index.html`,
+      template: path.resolve('public/index.html'),
+      inject: true,
+      hash: true
     })
   ]
 };
