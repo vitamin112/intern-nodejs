@@ -43,7 +43,7 @@
 // index.js or App.js
 import React from 'react';
 import {render} from 'react-dom';
-import NotificationPopup from './components/NotificationPopup/NotificationPopup';
+import NotificationPopup from '../../assets/src/components/NotificationPopup/NotificationPopup';
 
 (async () => {
   async function getData() {

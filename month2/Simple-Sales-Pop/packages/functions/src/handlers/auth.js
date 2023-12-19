@@ -55,15 +55,15 @@ app.use(
       await createNotifications(notifications);
 
       await shopify.webhook.create({
-        address: 'https://b6be-116-96-47-55.ngrok-free.app',
+        address: 'https://a02d-171-224-180-224.ngrok-free.app',
         topic: 'orders/create',
         format: 'json'
       });
 
-      await shopify.scriptTag.create({
-        event: 'onload',
-        src: 'https://localhost:3000/scripttag/index.min.js'
-      });
+      // await shopify.scriptTag.create({
+      //   event: 'onload',
+      //   src: 'https://localhost:3000/scripttag/index.min.js'
+      // });
 
       return (ctx.body = {
         success: true

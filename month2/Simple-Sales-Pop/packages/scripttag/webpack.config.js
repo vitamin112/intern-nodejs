@@ -19,9 +19,15 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        loader: 'babel-loader'
+        test: /\.(js|jsx)$/,
+        exclude: /(node_modules|bower_components)/,
+        loader: 'babel-loader',
+        options: {presets: ['@babel/env', '@babel/preset-react']}
       },
+      // {
+      //   test: /\.js$/,
+      //   loader: 'babel-loader'
+      // },
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
         use: 'file-loader'
@@ -46,12 +52,6 @@ module.exports = {
       defaults: '.env.example',
       systemvars: true,
       path: path.resolve(__dirname, environmentPath)
-    }),
-    new HtmlWebpackPlugin({
-      filename: `index.html`,
-      template: path.resolve('public/index.html'),
-      inject: true,
-      hash: true
     })
   ]
 };
