@@ -1,8 +1,8 @@
 import {Card, Layout, Page, Spinner, Tabs} from '@shopify/polaris';
 import React, {useCallback, useEffect, useState} from 'react';
-import DisplayTabContent from '../../components/DisplayContentTab/DisplayContentTab';
+import DisplayTabContent from './components/DisplayContentTab/DisplayContentTab';
 import NotificationPopup from '../../components/NotificationPopup/NotificationPopup';
-import TriggerTabContent from '../../components/TriggerContentTab/TriggerContentTab';
+import TriggerTabContent from './components/TriggerContentTab/TriggerContentTab';
 import useEditApi from '../../hooks/api/useEditApi';
 import useFetchApi from '../../hooks/api/useFetchApi';
 
@@ -58,12 +58,12 @@ export default function Settings() {
       subtitle="Decide how your notifications will display"
       fullWidth
     >
-      {loading ? (
+      {loading || editing ? (
         <Spinner />
       ) : (
         <Layout>
           <Layout.Section oneThird>
-            <NotificationPopup timestamp={settings.hideTimeAgo ? '' : '1 day ago'} />
+            <NotificationPopup />
           </Layout.Section>
 
           <Layout.Section>

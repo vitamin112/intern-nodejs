@@ -14,7 +14,6 @@ import moment from 'moment';
 export default function Notifications() {
   const {
     data = [],
-    fetchApi,
     prevPage = false,
     nextPage = false,
     onQueryChange,
@@ -35,8 +34,6 @@ export default function Notifications() {
   };
 
   const renderItem = item => {
-    const momentObj = moment(item.timestamp);
-    const timeAgo = momentObj.fromNow();
     let date = new Date(item.timestamp);
     var options = {month: 'long', day: 'numeric'};
 
@@ -46,14 +43,7 @@ export default function Notifications() {
       <ResourceList.Item id={item.id} accessibilityLabel={`View details for ${item.name}`}>
         <Stack distribution="fill">
           <Stack.Item>
-            <NotificationPopup
-              productImage={item.productImage}
-              firstName={item.firstName}
-              city={item.city}
-              country={item.country}
-              productName={item.productName}
-              timestamp={timeAgo}
-            />
+            <NotificationPopup data={item} />
           </Stack.Item>
           <Stack.Item>
             <Stack distribution="trailing">

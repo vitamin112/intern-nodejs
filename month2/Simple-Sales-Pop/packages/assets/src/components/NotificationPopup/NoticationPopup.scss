@@ -1,8 +1,29 @@
 .Avava-SP__Wrapper {
   width: 293px;
   position: relative;
-  z-index: 99;
+  z-index: 999999;
   color: #333;
+}
+
+.Avava-SP__Wrapper.bottom-left {
+  position: fixed;
+  bottom: 80px;
+  left: 10px;
+}
+.Avava-SP__Wrapper.bottom-right {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+}
+.Avava-SP__Wrapper.top-left {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+}
+.Avava-SP__Wrapper.top-right {
+  position: fixed;
+  top: 10px;
+  right: 10px;
 }
 
 .Avava-SP__Wrapper .Avava-SP__LinkWrapper {
@@ -41,7 +62,7 @@
   -webkit-box-shadow: 3px 0 5px rgba(5, 5, 5, 0.07);
   -moz-box-shadow: 3px 0 5px rgba(5, 5, 5, 0.07);
   box-shadow: 3px 0 5px rgba(5, 5, 5, 0.07);
-  background: #ffffff;
+  background: #eeeded;
   padding: 5px;
 }
 .Avava-SP__Wrapper .Avava-SP__Image {

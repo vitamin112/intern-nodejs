@@ -1,6 +1,6 @@
 import {Button, Checkbox, FormLayout, Heading, RangeSlider} from '@shopify/polaris';
 import React from 'react';
-import DesktopPositionInput from '../DesktopPositionInput/DesktopPositionInput';
+import DesktopPositionInput from '../../../../components/DesktopPositionInput/DesktopPositionInput';
 
 const DisplayContentTab = ({settings, handleInputChange}) => {
   return (
