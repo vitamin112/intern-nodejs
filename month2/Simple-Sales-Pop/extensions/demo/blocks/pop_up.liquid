@@ -1,8 +1,13 @@
+{% if shop.metafields.shopify_app.setting %}
+  <script>
+    window.setting={{ shop.metafields.shopify_app.setting.value | json }}
+  </script>
+{% endif %}
+
 {% schema %}
 {
   "name": "pop up",
   "target": "body",
-  "javascript": "test.js",
-  "settings": []
+  "javascript": "test.js"
 }
 {% endschema %}

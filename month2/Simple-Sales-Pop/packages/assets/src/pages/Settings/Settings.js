@@ -5,6 +5,7 @@ import NotificationPopup from '../../components/NotificationPopup/NotificationPo
 import TriggerTabContent from './components/TriggerContentTab/TriggerContentTab';
 import useEditApi from '../../hooks/api/useEditApi';
 import useFetchApi from '../../hooks/api/useFetchApi';
+import ShopifyContentTab from './Components/ShopifyContentTab/ShopifyContentTab';
 
 /**
  * @return {JSX.Element}
@@ -42,6 +43,12 @@ export default function Settings() {
       content: 'Triggers',
       children: <TriggerTabContent settings={settings} handleInputChange={handleInputChange} />,
       panelID: 'prospects-content-1'
+    },
+    {
+      id: 'prospects-2',
+      content: 'Shopify',
+      children: <ShopifyContentTab />,
+      panelID: 'prospects-content-2'
     }
   ];
 
