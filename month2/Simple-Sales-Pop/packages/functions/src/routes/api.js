@@ -15,6 +15,7 @@ export default function apiRouter(isEmbed = false) {
   router.get('/settings', settingController.getSettings);
   router.put('/settings', settingController.updateSettings);
   router.get('/notifications', notificationController.getNotifications);
+  router.post('/republish', settingController.syncSetting);
 
   return router;
 }

@@ -5,7 +5,7 @@ import NotificationPopup from '../../components/NotificationPopup/NotificationPo
 import TriggerTabContent from './components/TriggerContentTab/TriggerContentTab';
 import useEditApi from '../../hooks/api/useEditApi';
 import useFetchApi from '../../hooks/api/useFetchApi';
-import ShopifyContentTab from './Components/ShopifyContentTab/ShopifyContentTab';
+import {api} from '../../helpers';
 
 /**
  * @return {JSX.Element}
@@ -15,6 +15,9 @@ export default function Settings() {
   const {editing, handleEdit} = useEditApi({url: '/settings'});
   const {fetchApi, data: settings, setData: setSettings, loading} = useFetchApi({
     url: '/settings'
+  });
+  const {fetchApi: fetchRePublishApi, loading: republishing} = useFetchApi({
+    url: '/republish'
   });
 
   const getSettings = async () => {
@@ -43,12 +46,6 @@ export default function Settings() {
       content: 'Triggers',
       children: <TriggerTabContent settings={settings} handleInputChange={handleInputChange} />,
       panelID: 'prospects-content-1'
-    },
-    {
-      id: 'prospects-2',
-      content: 'Shopify',
-      children: <ShopifyContentTab />,
-      panelID: 'prospects-content-2'
     }
   ];
 
@@ -58,14 +55,19 @@ export default function Settings() {
     await handleEdit(settings);
   };
 
+  const handleRePublish = async () => {
+    await fetchRePublishApi(settings);
+  };
+
   return (
     <Page
       title="Settings"
       primaryAction={{content: 'Save', loading: editing, onAction: handleSettingUpdate}}
+      secondaryActions={[{content: 'RePublish', onAction: handleRePublish}]}
       subtitle="Decide how your notifications will display"
       fullWidth
     >
-      {loading || editing ? (
+      {loading || editing || republishing ? (
         <Spinner />
       ) : (
         <Layout>
@@ -85,5 +87,3 @@ export default function Settings() {
     </Page>
   );
 }
-
-Settings.propTypes = {};

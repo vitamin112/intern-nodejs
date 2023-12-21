@@ -45,7 +45,7 @@ export async function updateShopSetting(data, id) {
     }
     const [doc] = docs.docs;
     await doc.ref.set(data);
-    return presentDataAndFormatDate(doc);
+    return data;
   } catch (error) {
     console.log(error);
     return null;

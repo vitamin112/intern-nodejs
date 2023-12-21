@@ -18,3 +18,33 @@ export async function getShopifyShop(ctx) {
 
   return {shopify, shopData};
 }
+
+export async function createShopifyByShopID(id) {
+  const shopData = await getShopById(id);
+
+  const shopify = new Shopify({
+    accessToken: shopData.accessToken,
+    shopName: shopData.shopifyDomain
+  });
+
+  return {shopify};
+}
+
+export async function updateWebhookByTopic(shopId, url, topic) {
+  try {
+    const shopData = await getShopById(shopId);
+
+    const shopify = new Shopify({
+      accessToken: shopData.accessToken,
+      shopName: shopData.shopifyDomain
+    });
+
+    const [webhook] = await shopify.webhook.list({topic});
+    await shopify.webhook.update(webhook.id, {address: `https://${url}/webhook/newOrder`});
+
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
