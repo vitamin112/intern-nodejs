@@ -7,7 +7,7 @@ import {createShopifyByShopID} from './shopifyService';
 
 export async function syncMetaSetting(shopId, data) {
   try {
-    const {shopify} = await createShopifyByShopID(shopId);
+    const shopify = await createShopifyByShopID(shopId);
     const [metafieldSetting] = await shopify.metafield.list({key: 'setting'});
     await shopify.metafield.update(metafieldSetting.id, {value: JSON.stringify(data)});
 

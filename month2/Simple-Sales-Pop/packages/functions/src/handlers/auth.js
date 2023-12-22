@@ -12,6 +12,7 @@ import {createNotifications} from '../repositories/notificationRepository';
 import {createShopSetting} from '../repositories/settingRepository';
 import {getNotifications} from '../services/notificationService';
 import {getShopifyShop} from '../services/shopifyService';
+import {syncMetaSetting} from '../services/settingService';
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
@@ -51,7 +52,9 @@ app.use(
     afterInstall: async ctx => {
       const {shopify, shopData} = await getShopifyShop(ctx);
       const notifications = await getNotifications(shopify, shopData.id);
+
       await createShopSetting(defaultSettings, shopData.id);
+      await syncMetaSetting(shopData.id, defaultSettings);
       await createNotifications(notifications);
 
       await shopify.webhook.create({
