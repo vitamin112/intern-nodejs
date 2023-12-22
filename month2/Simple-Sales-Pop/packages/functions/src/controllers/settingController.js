@@ -36,9 +36,11 @@ export async function syncSetting(ctx) {
   const baseUrl = app.baseUrl;
   const topic = 'orders/create';
   const shopId = getCurrentShop(ctx);
-  const updatedSettings = ctx.req.body;
+  const {data} = ctx.req.body;
 
+  const updatedSettings = await updateShopSetting(data, shopId);
   await syncMetaSetting(shopId, updatedSettings);
+
   await updateWebhookByTopic(shopId, baseUrl, topic);
 
   if (updatedSettings) {

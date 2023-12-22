@@ -81,9 +81,13 @@ export default function Notifications() {
             }}
           />
           <Stack distribution="center" spacing="loose">
-            <Button icon={ChevronLeftMinor} disabled={pageInfo.hasPre} onClick={prevPage}></Button>
             <Button
-              disabled={pageInfo.hasNext}
+              icon={ChevronLeftMinor}
+              disabled={pageInfo.hasPre || loading}
+              onClick={prevPage}
+            ></Button>
+            <Button
+              disabled={pageInfo.hasNext || loading}
               icon={ChevronRightMinor}
               onClick={nextPage}
             ></Button>

@@ -16,7 +16,7 @@ export default function Settings() {
   const {fetchApi, data: settings, setData: setSettings, loading} = useFetchApi({
     url: '/settings'
   });
-  const {fetchApi: fetchRePublishApi, loading: republishing} = useFetchApi({
+  const {handleEdit: handleUpdateShopifySetting, editing: republishing} = useEditApi({
     url: '/republish'
   });
 
@@ -56,14 +56,14 @@ export default function Settings() {
   };
 
   const handleRePublish = async () => {
-    await fetchRePublishApi(settings);
+    await handleUpdateShopifySetting(settings);
   };
 
   return (
     <Page
       title="Settings"
       primaryAction={{content: 'Save', loading: editing, onAction: handleSettingUpdate}}
-      secondaryActions={[{content: 'RePublish', onAction: handleRePublish}]}
+      secondaryActions={[{content: 'RePublish', onAction: handleRePublish, loading: republishing}]}
       subtitle="Decide how your notifications will display"
       fullWidth
     >
