@@ -22,10 +22,10 @@ export async function getShopifyShop(ctx) {
 export async function createShopifyByShopID(id) {
   const shopData = await getShopById(id);
 
-  return (shopify = new Shopify({
+  return new Shopify({
     accessToken: shopData.accessToken,
     shopName: shopData.shopifyDomain
-  }));
+  });
 }
 
 export async function updateWebhookByTopic(shopId, url, topic) {
