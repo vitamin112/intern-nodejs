@@ -8,6 +8,7 @@ import useDeleteApi from '../../hooks/api/useDeleteApi';
 import useEditApi from '../../hooks/api/useEditApi';
 import useConfirmModal from '../../hooks/popup/useConfirmModal';
 import useTable from '../../hooks/table/useTable';
+import {initEmployee} from '../../config/setting';
 
 /**
  * Render a employees page for overview
@@ -17,17 +18,6 @@ import useTable from '../../hooks/table/useTable';
  */
 
 export default function Employees() {
-  /**
-   * initEmployee viết vào file employeeConfig.js trong folder config nhé
-   */
-  const initEmployee = {
-    email: '',
-    fullName: '',
-    role: '',
-    status: false,
-    avatar: '',
-    englishName: ''
-  };
   const {creating, handleCreate} = useCreateApi({url: '/employees', fullResp: true});
   const {editing, handleEdit} = useEditApi({url: '/employees', fullResp: true});
   const {deleting, handleDelete} = useDeleteApi({url: '/employees'});
@@ -51,8 +41,7 @@ export default function Employees() {
         icon: DeleteMajor,
         destructive: true,
         onAction: item => {
-          openModal(MODAL_ACTION.DELETE);
-          setModalActionType(MODAL_ACTION.DELETE);
+          openDelModal();
           setInputs(item.id);
         }
       }
@@ -65,8 +54,7 @@ export default function Employees() {
 
   const handelAction = (action, payload) => {
     if (action === 'CREATE') return handleCreate(payload);
-    if (action === MODAL_ACTION.UPDATE) return handleEdit(payload);
-    return handleDelete(payload);
+    return handleEdit(payload);
   };
 
   const handleSuccess = result => {
@@ -95,7 +83,7 @@ export default function Employees() {
       case MODAL_ACTION.UPDATE:
         return 'UPDATE EMPLOYEE INFORMATION';
       default:
-        return 'DELETE EMPLOYEE';
+        return;
     }
   };
 
@@ -139,18 +127,21 @@ export default function Employees() {
     </>
   );
 
-  /**
-   * Nên tách thành modal delete và save riêng, tạo state modalActionType làm rắc rối
-   */
   const {modal, openModal} = useConfirmModal({
-    buttonTitle: modalActionType === MODAL_ACTION.DELETE ? 'Delete' : 'Save',
-    destructive: modalActionType === MODAL_ACTION.DELETE,
-    loading: creating || editing || deleting,
-    content: modalActionType === MODAL_ACTION.DELETE ? undefined : modalContent,
-    disabled:
-      modalActionType !== MODAL_ACTION.DELETE && (inputs.email === '' || inputs.fullName === ''),
+    buttonTitle: 'Save',
+    loading: creating || editing,
+    content: modalContent,
+    disabled: inputs.email === '' || inputs.fullName === '',
     HtmlTitle: modalTitle,
     confirmAction: action => handelAction(action, inputs),
+    successCallback: handleSuccess,
+    closeCallback: () => setInputs(initEmployee)
+  });
+
+  const {modal: delModal, openModal: openDelModal} = useConfirmModal({
+    loading: deleting,
+    destructive: true,
+    confirmAction: () => handleDelete(inputs),
     successCallback: handleSuccess,
     closeCallback: () => setInputs(initEmployee)
   });
@@ -172,6 +163,7 @@ export default function Employees() {
           <FileUploader setData={setData} />
           {loading ? <Spinner /> : Table}
           {modal}
+          {delModal}
         </Layout.Section>
       </Layout>
     </Page>

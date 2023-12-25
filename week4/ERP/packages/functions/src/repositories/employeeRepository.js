@@ -1,5 +1,4 @@
 import {Firestore} from '@google-cloud/firestore';
-import {validateCSVFile} from '../helpers/validateCSVFile';
 /**
  * @documentation
  *
@@ -13,18 +12,10 @@ const collection = firestore.collection('employees');
 export async function getEmployees() {
   try {
     const querySnapshot = await collection.get();
-    /**
-     * Check kết quả trả về có item hay ko ở đây: if (querySnapshot.empty), nếu ko trống thì chạy tiếp
-     */
-    const result = [];
-    /**
-     * Sử dụng map thay vì forEach
-     */
-    querySnapshot.forEach(doc => {
-      result.push({...doc.data(), id: doc.id});
-    });
 
-    return result;
+    if (querySnapshot.empty) return [];
+
+    return querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
   } catch (e) {
     console.error(e);
     return null;
@@ -97,20 +88,34 @@ export async function deleteEmployeeBulk(ids) {
 
 export async function editEmployee(data) {
   try {
-    const userRef = await collection.doc(data.id).set({...data});
-    console.log(userRef);
+    await collection.doc(data.id).set({...data});
     return {...data};
   } catch (e) {
     console.error(e);
-    return null;
+    return {};
   }
 }
 
 export async function importCSV(data) {
   try {
-    /**
-     * có thể viết func validateCSVFile trong file này luôn hoặc validate trong func này luôn vì validateCSVFile ko sử dụng lại được
-     */
+    function validateCSVFile(rawData) {
+      const validate = data => {
+        if (
+          !data.email ||
+          !data.fullName ||
+          data.email == '' ||
+          data.fullName == '' ||
+          typeof data.email !== 'string' ||
+          typeof data.fullName !== 'string'
+        ) {
+          return false;
+        }
+        return true;
+      };
+
+      return rawData.filter(data => validate(data));
+    }
+
     data = validateCSVFile(data);
 
     const batch = firestore.batch();
