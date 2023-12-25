@@ -13,8 +13,13 @@ const collection = firestore.collection('employees');
 export async function getEmployees() {
   try {
     const querySnapshot = await collection.get();
-
+    /**
+     * Check kết quả trả về có item hay ko ở đây: if (querySnapshot.empty), nếu ko trống thì chạy tiếp
+     */
     const result = [];
+    /**
+     * Sử dụng map thay vì forEach
+     */
     querySnapshot.forEach(doc => {
       result.push({...doc.data(), id: doc.id});
     });
@@ -103,6 +108,9 @@ export async function editEmployee(data) {
 
 export async function importCSV(data) {
   try {
+    /**
+     * có thể viết func validateCSVFile trong file này luôn hoặc validate trong func này luôn vì validateCSVFile ko sử dụng lại được
+     */
     data = validateCSVFile(data);
 
     const batch = firestore.batch();

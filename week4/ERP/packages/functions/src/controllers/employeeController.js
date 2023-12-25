@@ -11,6 +11,9 @@ import {
 export async function handleGetAll(ctx) {
   const employees = await getEmployees();
 
+  /**
+   * List empl trống trả về [] không trả về lỗi
+   */
   if (employees) {
     return (ctx.body = {data: employees, success: true});
   }
@@ -20,6 +23,10 @@ export async function handleGetAll(ctx) {
 export async function handleGetOne(ctx) {
   const {id} = ctx.params;
   const employee = await getEmployeeById(id);
+
+  /**
+   * List empl trống trả về [] không trả về lỗi
+   */
 
   if (employee) {
     return (ctx.body = {data: employee, success: true});
@@ -64,10 +71,17 @@ export async function handleCreate(ctx) {
 export async function handleEdit(ctx) {
   const userData = ctx.req.body;
 
+  /**
+   * a nghĩ trường hợp này mình k cần check tồn tại đâu, cứ call vào edit func thôi
+   */
   const employee = await getEmployeeById(userData.id);
 
   if (employee) {
     const employeeUpdated = await editEmployee(userData);
+    /**
+     * return success ở repo hơn hay ở controller hơn nếu editEmployee chạy vào catch?
+     * Tùy vào trường hợp để xử lý ở repo hay controller, với hàm edit này a nghĩ controller chỉ cần xử lý như mẫu này là ok r || https://prnt.sc/n2QB0c_sTrTF
+     */
     return (ctx.body = {success: true, message: 'Update successfully!', data: employeeUpdated});
   }
 

@@ -17,6 +17,9 @@ import useTable from '../../hooks/table/useTable';
  */
 
 export default function Employees() {
+  /**
+   * initEmployee viết vào file employeeConfig.js trong folder config nhé
+   */
   const initEmployee = {
     email: '',
     fullName: '',
@@ -136,6 +139,9 @@ export default function Employees() {
     </>
   );
 
+  /**
+   * Nên tách thành modal delete và save riêng, tạo state modalActionType làm rắc rối
+   */
   const {modal, openModal} = useConfirmModal({
     buttonTitle: modalActionType === MODAL_ACTION.DELETE ? 'Delete' : 'Save',
     destructive: modalActionType === MODAL_ACTION.DELETE,
