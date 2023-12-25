@@ -10,9 +10,11 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const {WebpackPluginServe} = require('webpack-plugin-serve');
 const fs = require('fs');
 const os = require('os');
+const {DefinePlugin} = require('webpack');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const environmentPath = !process.env.ENVIRONMENT ? '.env' : `.env.${process.env.ENVIRONMENT}`;
+require('dotenv').config({path: environmentPath});
 const isEmbeddedApp = process.env.IS_EMBEDDED_APP === 'yes';
 const indexFile = isEmbeddedApp ? 'embed' : 'standalone';
 const wpsPort = (process.env.WPS_PORT || 45000) + (isEmbeddedApp ? -5000 : 5000);
@@ -36,9 +38,13 @@ if (!isProduction && process.env.SHOPIFY_API_KEY) {
         return;
       }
       const configData = JSON.parse(data);
+
       configData.app.base_url = process.env.HOST.replace('https://', '');
       configData.shopify.api_key = process.env.SHOPIFY_API_KEY;
       configData.shopify.secret = process.env.SHOPIFY_API_SECRET;
+
+      configData.app.client_id = process.env.CLIENT_ID;
+      configData.app.client_secret = process.env.CLIENT_SECRET;
       fs.writeFileSync(runtimeFile, JSON.stringify(configData, null, 4));
     });
 
@@ -72,6 +78,9 @@ function updateEnvFile(file, data) {
 }
 
 const plugins = [
+  new DefinePlugin({
+    'process.env': JSON.stringify(process.env)
+  }),
   new HtmlWebpackPlugin({
     filename: `${indexFile}.html`,
     template: path.resolve('webpack/html/index.html'),
