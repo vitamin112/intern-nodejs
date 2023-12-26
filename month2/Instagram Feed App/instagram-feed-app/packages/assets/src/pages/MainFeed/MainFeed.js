@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useReducer, useState} from 'react';
 import {
   Badge,
   Banner,
@@ -20,8 +20,9 @@ import {
 import {useStore} from '@assets/reducers/storeReducer';
 import {LockMajor, StarOutlineMinor, DesktopMajor, MobileMajor} from '@shopify/polaris-icons';
 import MainFeedMedia from '../../components/MainFeedMedia/MainFeedMedia';
-import {api} from '../../helpers';
-import {baseUrl, clientId} from '../../config/app';
+import {baseUrl, clientId, clientSecret} from '../../config/app';
+import {reducer} from '@assets/actions/storeActions';
+import queryString from 'query-string';
 
 /**
  * Render a MainFeed page for overview
@@ -30,12 +31,83 @@ import {baseUrl, clientId} from '../../config/app';
  * @constructor
  */
 export default function MainFeed() {
-  const [enabled, setEnabled] = useState(false);
-  const {dispatch} = useStore();
+  const {state, dispatch} = useStore();
+  const {shop} = state;
 
-  (async () => {
-    await api();
-  })();
+  const [loginWindow, setLoginWindow] = useState(window);
+  const [code, setCode] = useState('');
+
+  useEffect(() => {
+    const url = localStorage.getItem('url');
+    if (url) {
+      const code = url.split('=')[1];
+      fetch(`https://api.instagram.com/oauth/access_token`, {
+        method: 'POST',
+        body: JSON.stringify({
+          client_id: clientId,
+          client_secret: clientSecret,
+          grant_type: 'authorization_code',
+          redirect_uri: `${baseUrl}/`,
+          code
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          // dispatch({type: 'SET_TOKEN', payload: data.access_token});
+          // dispatch({type: 'SET_USER', payload: data.user});
+          // dispatch({type: 'SET_MEDIA', payload: data.media});
+          // dispatch({type: 'SET_LOADING', payload: false});
+          // dispatch({type: 'SET_ERROR', payload: false});
+          // dispatch({type: 'SET_INSTAGRAM', payload: true});
+        })
+        .catch(err => {
+          console.log(err);
+          // dispatch({type: 'SET_LOADING', payload: false});
+          // dispatch({type: 'SET_ERROR', payload: true});
+        });
+    }
+  });
+
+  const openLoginPopUp = () => {
+    const popup = window.open(
+      `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=https://localhost:3000/&scope=user_profile,user_media&response_type=code`,
+      'auth',
+      'height=500,width=400'
+    );
+    setLoginWindow(popup);
+  };
+
+  const handleGetToken = async code => {
+    const resp = await fetch(`https://api.instagram.com/oauth/access_token`, {
+      method: 'POST',
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: 'authorization_code',
+        redirect_uri: `${baseUrl}/`,
+        code
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const data = await resp.json();
+    localStorage.setItem('token', json.stringify(data.access_token));
+    loginWindow.close();
+    // dispatch({type: 'SET_TOKEN', payload: data.access_token});
+  };
+
+  useEffect(async () => {
+    const param = queryString.parse(window.location.search);
+    if (param.code) {
+      localStorage.setItem('code', param.code);
+      await handleGetToken(param.code);
+    }
+  }, [loginWindow.unload]);
 
   return (
     <Page title="Main feed">
@@ -63,15 +135,10 @@ export default function MainFeed() {
                   </svg>
                 }
                 primary
+                onClick={openLoginPopUp}
               >
                 {' '}
-                <Link
-                  id="authLink"
-                  url={`https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${baseUrl}/auth/&scope=user_profile,user_media&response_type=code`}
-                ></Link>
-                <Label HtmlForm="authForm" id="authLink">
-                  Connect with Instagram
-                </Label>
+                Connect with Instagram
               </Button>
               <DisplayText size="small">
                 Connected to <TextStyle variation="strong">@anyone</TextStyle> |{' '}
