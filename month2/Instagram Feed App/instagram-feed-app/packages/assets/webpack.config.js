@@ -45,6 +45,7 @@ if (!isProduction && process.env.SHOPIFY_API_KEY) {
 
       configData.app.client_id = process.env.CLIENT_ID;
       configData.app.client_secret = process.env.CLIENT_SECRET;
+      configData.app.redirect_uri = process.env.REDIRECT_URI;
       fs.writeFileSync(runtimeFile, JSON.stringify(configData, null, 4));
     });
 
