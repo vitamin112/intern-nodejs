@@ -1,5 +1,14 @@
 import React from 'react';
-import {Card, Layout, Page, Stack, Thumbnail} from '@shopify/polaris';
+import {
+  Card,
+  DisplayText,
+  Heading,
+  Layout,
+  Page,
+  Stack,
+  TextStyle,
+  Thumbnail
+} from '@shopify/polaris';
 
 export default function MainFeedMedia({
   title = 'Title',
@@ -9,7 +18,7 @@ export default function MainFeedMedia({
 }) {
   return (
     <Page fullWidth>
-      <Card title={title}>
+      <Card title={<TextStyle>{title}</TextStyle>}>
         <Stack distribution="center">
           <Stack.Item>
             <Thumbnail
