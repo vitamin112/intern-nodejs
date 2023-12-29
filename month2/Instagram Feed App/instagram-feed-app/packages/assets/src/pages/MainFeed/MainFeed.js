@@ -34,16 +34,21 @@ import useFetchApi from '../../hooks/api/useFetchApi';
  * @constructor
  */
 export default function MainFeed() {
-  const {handleCreate: connectWithInsta, creating} = useCreateApi({
-    url: '/connect_instagram',
-    fullResp: true
+  const {fetchApi, loading, data, setData} = useFetchApi({
+    url: '/account',
+    fullResp: true,
+    defaultData: {}
   });
   const [loginWindow, setLoginWindow] = useState(window);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+  const {settings, media} = data;
+
+  useEffect(() => {
+    fetchApi();
+  }, []);
 
   const openLoginPopUp = () => {
     const popup = window.open(
-      `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirect_uri}/&scope=user_profile,user_media&response_type=code`,
+      `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirect_uri}/instagramAuth/getToken&scope=user_profile,user_media&response_type=code`,
       'auth',
       'height=500,width=400'
     );
@@ -55,21 +60,24 @@ export default function MainFeed() {
   };
 
   const handleBeforeUnload = useCallback(() => {
-    console.log("I'm closing");
-    window.location.reload();
+    if (loginWindow.location.href.includes('authorize')) {
+      loginWindow.close();
+    }
   });
 
   const logOut = () => {
-    localStorage.removeItem('user');
-    setUser(null);
+    setData({settings: null, media: null});
   };
+  if (loginWindow?.closed) {
+    loginWindow.opener.location.reload();
+  }
 
   useEffect(() => {
-    async function getToken() {
+    function getToken() {
       const param = queryString.parse(window.location.search);
+      console.log('param', param);
       if (param.code) {
-        const resp = await connectWithInsta(param.code);
-        localStorage.setItem('user', JSON.stringify(resp.data.user));
+        console.log('code', param.code);
         loginWindow.close();
       }
     }
@@ -85,35 +93,36 @@ export default function MainFeed() {
         <Layout.Section>
           <Card>
             <Card.Section>
-              <Button
-                icon={
-                  <svg
-                    width={24}
-                    height={24}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M6 10.5a3.5 3.5 0 1 0 7 0 3.5 3.5 0 0 0-7 0Zm1 0a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Z"
-                    />
-                    <path d="M13.25 7.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M12.5 17h-6a3.5 3.5 0 0 1-3.5-3.5v-6a3.5 3.5 0 0 1 3.5-3.5h6a3.5 3.5 0 0 1 3.5 3.5v6a3.5 3.5 0 0 1-3.5 3.5Zm-8.5-9.5a2.5 2.5 0 0 1 2.5-2.5h6a2.5 2.5 0 0 1 2.5 2.5v6a2.5 2.5 0 0 1-2.5 2.5h-6a2.5 2.5 0 0 1-2.5-2.5v-6Z"
-                    />
-                  </svg>
-                }
-                primary
-                onClick={openLoginPopUp}
-              >
-                {' '}
-                Connect with Instagram
-              </Button>
-              {user && (
+              {!data?.settings ? (
+                <Button
+                  loading={loading}
+                  icon={
+                    <svg
+                      width={24}
+                      height={24}
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M6 10.5a3.5 3.5 0 1 0 7 0 3.5 3.5 0 0 0-7 0Zm1 0a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Z"
+                      />
+                      <path d="M13.25 7.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                      <path
+                        fillRule="evenodd"
+                        d="M12.5 17h-6a3.5 3.5 0 0 1-3.5-3.5v-6a3.5 3.5 0 0 1 3.5-3.5h6a3.5 3.5 0 0 1 3.5 3.5v6a3.5 3.5 0 0 1-3.5 3.5Zm-8.5-9.5a2.5 2.5 0 0 1 2.5-2.5h6a2.5 2.5 0 0 1 2.5 2.5v6a2.5 2.5 0 0 1-2.5 2.5h-6a2.5 2.5 0 0 1-2.5-2.5v-6Z"
+                      />
+                    </svg>
+                  }
+                  primary
+                  onClick={openLoginPopUp}
+                >
+                  {' '}
+                  Connect with Instagram
+                </Button>
+              ) : (
                 <DisplayText size="small">
-                  Connected to{' '}
-                  <TextStyle variation="strong">@{user ? user.username : 'test'}</TextStyle> |{' '}
+                  Connected to <TextStyle variation="strong">@{settings?.username}</TextStyle> |{' '}
                   <Button monochrome plain onClick={openLoginPopUp}>
                     Change account
                   </Button>{' '}

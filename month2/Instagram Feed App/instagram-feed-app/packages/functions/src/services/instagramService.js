@@ -11,7 +11,7 @@ export async function generateTokenByCode(code) {
     formData.append('client_id', app.clientId);
     formData.append('client_secret', app.client_secret);
     formData.append('grant_type', 'authorization_code');
-    formData.append('redirect_uri', app.redirect_uri);
+    formData.append('redirect_uri', app.redirect_uri + 'instagramAuth/getToken');
     formData.append('code', code);
 
     const resp = await axios.post(`https://api.instagram.com/oauth/access_token`, formData, {
@@ -37,7 +37,7 @@ export async function getUserByAccessToken(access_token) {
     const reps = await axios.get(
       `https://graph.instagram.com/me?fields=id,username&limit=2&access_token=${access_token}}`
     );
-    return reps.data;
+    return {...reps.data, access_token};
   } catch (error) {
     console.log(error);
     return {};

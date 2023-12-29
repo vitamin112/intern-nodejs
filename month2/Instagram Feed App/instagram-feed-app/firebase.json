@@ -52,6 +52,10 @@
         "function": "authSa"
       },
       {
+        "source": "/instagramAuth/**",
+        "function": "instaAuth"
+      },
+      {
         "source": "/embed/**",
         "destination": "/embed.html"
       },

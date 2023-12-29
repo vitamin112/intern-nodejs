@@ -4,7 +4,34 @@ import {
   getMediaByAccessToken,
   getUserByAccessToken
 } from '../services/instagramService';
-import {createUserSetting} from '../repositories/settingRepository';
+import {createUserSetting, getSettings, syncSetting} from '../repositories/settingRepository';
+import {createUser} from '../repositories/userRepository';
+import {getMedias, syncMedia} from '../repositories/mediaRepository';
+
+export async function handleAuth(ctx) {
+  const {code} = ctx.query;
+  const token = await generateTokenByCode(code);
+
+  const [user, media] = await Promise.all([
+    getUserByAccessToken(token.access_token),
+    getMediaByAccessToken(token.access_token)
+  ]);
+
+  await syncSetting(user);
+  await syncMedia(media.data);
+
+  return (ctx.body = {
+    data: {user, media: media.data}
+  });
+}
+
+export async function handleGetAccount(ctx) {
+  const [settings, media] = await Promise.all([getSettings(), getMedias()]);
+
+  return (ctx.body = {
+    data: {settings, media}
+  });
+}
 
 export async function connectInstagram(ctx) {
   const {data} = ctx.req.body;

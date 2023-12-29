@@ -3,6 +3,7 @@ import {Route, Switch} from 'react-router-dom';
 import NotFound from '@assets/loadables/NotFound';
 import MainFeed from '@assets/loadables/MainFeed';
 import {routePrefix} from '@assets/config/app';
+import Settings from '@assets/loadables/MainFeed';
 
 // eslint-disable-next-line react/prop-types
 const Routes = ({prefix = routePrefix}) => (

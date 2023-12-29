@@ -1,23 +1,31 @@
 import {Firestore} from '@google-cloud/firestore';
-import {presentDataAndFormatDate} from '@avada/firestore-utils';
-import {log} from 'firebase-functions/logger';
 
 const firestore = new Firestore();
 /** @type CollectionReference */
 const settingRef = firestore.collection('settings');
 
 /**
- * Get user setting by given user ID
- *
- * @param {string} id
- * @return {Promise<FirebaseFirestore.DocumentData>}
+ * @returns {Promise<{Settings}>}
  */
-export async function createUserSetting(id, setting) {
+export async function getSettings() {
+  const querySnapshot = await settingRef.get();
+  if (querySnapshot.empty) {
+    return {};
+  }
+  const [doc] = querySnapshot.docs;
+  return doc.data();
+}
+
+/**
+ * @param data
+ * @returns {Promise<{Shop}>}
+ */
+export async function syncSetting(data) {
   try {
-    await settingRef.doc(id).set({id, ...setting});
-    return true;
+    const doc = await settingRef.doc(data.id).set(data);
+    return doc;
   } catch (error) {
     console.log(error);
-    return false;
+    return {};
   }
 }

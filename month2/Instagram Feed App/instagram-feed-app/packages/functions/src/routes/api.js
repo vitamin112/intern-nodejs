@@ -14,8 +14,8 @@ export default function apiRouter(isEmbed = false) {
   router.get('/subscription', subscriptionController.getSubscription);
   router.get('/appNews', appNewsController.getList);
   router.get('/appNews', appNewsController.getList);
-  router.post('/connect_instagram', instagramController.connectInstagram);
   router.get('/media_instagram', instagramController.handleGetMedia);
 
+  router.get('/account', instagramController.handleGetAccount);
   return router;
 }
