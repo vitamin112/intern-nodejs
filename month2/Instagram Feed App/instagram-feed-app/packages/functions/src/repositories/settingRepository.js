@@ -1,5 +1,5 @@
 import {Firestore} from '@google-cloud/firestore';
-
+import {settings} from '../const/settings';
 const firestore = new Firestore();
 /** @type CollectionReference */
 const settingRef = firestore.collection('settings');
@@ -22,7 +22,7 @@ export async function getSettings() {
  */
 export async function syncSetting(data) {
   try {
-    const doc = await settingRef.doc(data.id).set(data);
+    const doc = await settingRef.doc(data.id).set({...settings, ...data});
     return doc;
   } catch (error) {
     console.log(error);
