@@ -52,8 +52,8 @@
         "function": "authSa"
       },
       {
-        "source": "/instagramAuth/**",
-        "function": "instaAuth"
+        "source": "/instagram/**",
+        "function": "instagram"
       },
       {
         "source": "/embed/**",

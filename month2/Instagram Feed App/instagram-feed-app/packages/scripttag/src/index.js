@@ -2,46 +2,19 @@ import React from 'react';
 import {render} from 'react-dom';
 import MainFeedMedia from '../../assets/src/components/MainFeedMedia/MainFeedMedia';
 
-// (async () => {
-//   async function getData() {
-//     const response = await fetch(
-//       'https://localhost:3000/clientApi/shop?domain=my-avada-store.myshopify.com'
-//     );
-//     return await response.json();
-//   }
-
-//   const result = await getData();
-//   const setting = window.setting;
-//   const {notifications} = result.data;
-
-//   function delay(ms) {
-//     return new Promise(resolve => setTimeout(resolve, ms * 1000));
-//   }
-
-//   async function showPopupsSequentially(notifications) {
-//     for (let i = 0; i < notifications.length; i++) {
-//       await delay(i === 0 ? setting.firstDelay : setting.popsInterval);
-
-//       const container = document.createElement('div');
-//       container.id = 'container';
-
-//       document.body.appendChild(container);
-//       render(
-//         <NotificationPopup setting={setting} data={notifications[i]} />,
-//         document.getElementById('container')
-//       );
-//       await delay(setting.displayDuration);
-//       document.body.removeChild(container);
-//     }
-//   }
-
-//   showPopupsSequentially(notifications);
-// })();
-
 (async () => {
-  const container = document.createElement('div');
-  container.id = 'container';
+  async function getData() {
+    const response = await fetch('https://localhost:3000/instagram/account');
+    return await response.json();
+  }
 
-  document.body.before(container);
-  render(<MainFeedMedia />, document.getElementById('container'));
+  const result = await getData();
+  const {settings, media} = result.data;
+  const container = document.createElement('div');
+  container.id = 'instagramFeed';
+  document.body.prepend(container);
+  render(
+    <MainFeedMedia settings={settings} data={media} />,
+    document.getElementById('instagramFeed')
+  );
 })();

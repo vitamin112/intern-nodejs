@@ -37,3 +37,21 @@ export async function getMedias() {
     return [];
   }
 }
+
+export async function deleteMedias() {
+  try {
+    const batch = firestore.batch();
+    const querySnapshot = await mediaRef.get();
+
+    querySnapshot.docs.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+
+    await batch.commit();
+
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}

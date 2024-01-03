@@ -6,7 +6,6 @@ const PRIMARY_COLOR = '#272727';
 
 const theme = {
   colors: {
-    primary: PRIMARY_COLOR,
     secondary: 'white'
   }
 };

@@ -1,12 +1,15 @@
-import {log} from 'firebase-functions/logger';
 import {
   generateTokenByCode,
   getMediaByAccessToken,
   getUserByAccessToken
 } from '../services/instagramService';
-import {createUserSetting, getSettings, syncSetting} from '../repositories/settingRepository';
-import {createUser} from '../repositories/userRepository';
-import {getMedias, syncMedia} from '../repositories/mediaRepository';
+import {
+  createUserSetting,
+  getSettings,
+  setSettings,
+  deleteSettings
+} from '../repositories/settingRepository';
+import {getMedias, syncMedia, deleteMedias} from '../repositories/mediaRepository';
 
 export async function handleAuth(ctx) {
   const {code} = ctx.query;
@@ -17,11 +20,27 @@ export async function handleAuth(ctx) {
     getMediaByAccessToken(token.access_token)
   ]);
 
-  await syncSetting(user);
+  await setSettings(user);
   await syncMedia(media.data);
 
   return (ctx.body = {
     data: {user, media: media.data}
+  });
+}
+
+export async function handleChangeSettings(ctx) {
+  const {data} = ctx.req.body;
+  await setSettings(data);
+  return (ctx.body = {
+    success: true
+  });
+}
+
+export async function handleLogout(ctx) {
+  const [user, media] = await Promise.all([deleteMedias(), deleteSettings()]);
+
+  return (ctx.body = {
+    data: {user, media}
   });
 }
 

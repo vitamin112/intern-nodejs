@@ -27,10 +27,28 @@ export default function App() {
       features={{newDesignLanguage: isEmbeddedApp}}
     >
       <Router history={history}>
-        <ErrorBoundary>
-          <Routes />
-        </ErrorBoundary>
+        <MainLayout>
+          <ErrorBoundary>
+            <Routes />
+          </ErrorBoundary>
+        </MainLayout>
       </Router>
     </AppProvider>
   );
 }
+
+const AppFullLayout = withRouter(({children}) => <AppLayout>{children}</AppLayout>);
+
+const MainLayout = ({children}) => {
+  return isEmbeddedApp ? (
+    <AppBridgeProvider>
+      <AppLayout>{children}</AppLayout>
+    </AppBridgeProvider>
+  ) : (
+    <AppFullLayout>{children}</AppFullLayout>
+  );
+};
+
+MainLayout.propTypes = {
+  children: PropTypes.node
+};

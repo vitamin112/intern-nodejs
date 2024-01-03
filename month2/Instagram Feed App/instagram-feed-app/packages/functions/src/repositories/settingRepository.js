@@ -4,28 +4,51 @@ const firestore = new Firestore();
 /** @type CollectionReference */
 const settingRef = firestore.collection('settings');
 
-/**
- * @returns {Promise<{Settings}>}
- */
 export async function getSettings() {
-  const querySnapshot = await settingRef.get();
-  if (querySnapshot.empty) {
-    return {};
-  }
-  const [doc] = querySnapshot.docs;
-  return doc.data();
-}
-
-/**
- * @param data
- * @returns {Promise<{Shop}>}
- */
-export async function syncSetting(data) {
   try {
-    const doc = await settingRef.doc(data.id).set({...settings, ...data});
-    return doc;
+    const querySnapshot = await settingRef.get();
+    if (querySnapshot.empty) {
+      return {};
+    }
+    const [doc] = querySnapshot.docs;
+    return doc.data();
   } catch (error) {
     console.log(error);
     return {};
+  }
+}
+
+export async function deleteSettings() {
+  try {
+    const querySnapshot = await settingRef.get();
+    if (querySnapshot.empty) {
+      return true;
+    }
+    const [doc] = querySnapshot.docs;
+    await doc.ref.delete();
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+export async function syncSettings(data) {
+  try {
+    await settingRef.doc(data.id).set({...settings, ...data});
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+export async function setSettings(data) {
+  try {
+    await settingRef.doc(data.id).set({...settings, ...data});
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
   }
 }
