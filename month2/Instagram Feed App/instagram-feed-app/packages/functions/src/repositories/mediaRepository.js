@@ -8,14 +8,9 @@ const mediaRef = firestore.collection('medias');
  * @param data
  * @returns {Promise<{Shop}>}
  */
-export async function syncMedia(data) {
+export async function syncMedia(data, userId) {
   try {
-    const batch = firestore.batch();
-    data.forEach(item => {
-      const docRef = mediaRef.doc(item.id);
-      batch.set(docRef, item);
-    });
-    await batch.commit();
+    await mediaRef.doc(userId).set({media: data});
 
     return true;
   } catch (error) {
@@ -26,12 +21,10 @@ export async function syncMedia(data) {
 
 export async function getMedias() {
   try {
-    const querySnapshot = await mediaRef
-      .orderBy('timestamp')
-      .limit(30)
-      .get();
-    const data = querySnapshot.docs.map(doc => doc.data());
-    return data;
+    const querySnapshot = await mediaRef.get();
+    const [data] = querySnapshot.docs.map(doc => doc.data());
+
+    return data.media;
   } catch (error) {
     console.log(error);
     return [];
@@ -40,14 +33,9 @@ export async function getMedias() {
 
 export async function deleteMedias() {
   try {
-    const batch = firestore.batch();
     const querySnapshot = await mediaRef.get();
-
-    querySnapshot.docs.forEach(doc => {
-      batch.delete(doc.ref);
-    });
-
-    await batch.commit();
+    const [doc] = querySnapshot.docs;
+    await doc.ref.delete();
 
     return true;
   } catch (error) {
