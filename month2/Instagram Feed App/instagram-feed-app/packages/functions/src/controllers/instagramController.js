@@ -10,6 +10,8 @@ import {
   deleteSettings
 } from '../repositories/settingRepository';
 import {getMedias, syncMedia, deleteMedias} from '../repositories/mediaRepository';
+import {getCurrentShop} from '../helpers/auth';
+import {syncMetaSetting} from '../services/shopifyService';
 
 export async function handleAuth(ctx) {
   const {code} = ctx.query;
@@ -22,6 +24,7 @@ export async function handleAuth(ctx) {
 
   await setSettings(user);
   await syncMedia(media.data, user.id);
+  await syncMedia(media.data, user.id);
 
   return (ctx.body = {
     data: {user, media: media.data}
@@ -30,7 +33,10 @@ export async function handleAuth(ctx) {
 
 export async function handleChangeSettings(ctx) {
   const {data} = ctx.req.body;
-  await setSettings(data);
+  const shopId = getCurrentShop(ctx);
+
+  const settings = await setSettings(data);
+  await syncMetaSetting(settings, shopId);
   return (ctx.body = {
     success: true
   });

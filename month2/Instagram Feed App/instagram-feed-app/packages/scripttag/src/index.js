@@ -9,12 +9,15 @@ import MainFeedMedia from '../../assets/src/components/MainFeedMedia/MainFeedMed
   }
 
   const result = await getData();
-  const {settings, media} = result.data;
+  const {media} = result.data;
+
+  const settings = window.setting;
+
   const container = document.createElement('div');
   container.id = 'instagramFeed';
   document.body.prepend(container);
   render(
-    <MainFeedMedia settings={settings} data={media} />,
+    <MainFeedMedia settings={settings || {}} data={media} />,
     document.getElementById('instagramFeed')
   );
 })();

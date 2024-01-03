@@ -46,7 +46,7 @@ export async function syncSettings(data) {
 export async function setSettings(data) {
   try {
     await settingRef.doc(data.id).set({...settings, ...data});
-    return true;
+    return {...settings, ...data};
   } catch (error) {
     console.log(error);
     return false;

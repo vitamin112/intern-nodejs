@@ -1,3 +1,8 @@
+{% if shop.metafields.shopify_app.setting %}
+  <script>
+    window.setting={{ shop.metafields.shopify_app.setting.value | json }}
+  </script>
+{% endif %}
 {% schema %}
 {
   "name": "media",
