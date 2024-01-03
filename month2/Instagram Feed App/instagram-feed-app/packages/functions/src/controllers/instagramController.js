@@ -21,7 +21,7 @@ export async function handleAuth(ctx) {
   ]);
 
   await setSettings(user);
-  await syncMedia(media.data);
+  await syncMedia(media.data, user.id);
 
   return (ctx.body = {
     data: {user, media: media.data}
