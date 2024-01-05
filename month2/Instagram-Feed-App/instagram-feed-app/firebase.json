@@ -52,8 +52,8 @@
         "function": "authSa"
       },
       {
-        "source": "/instagram/**",
-        "function": "instagram"
+        "source": "/clientApi/**",
+        "function": "clientApi"
       },
       {
         "source": "/embed/**",

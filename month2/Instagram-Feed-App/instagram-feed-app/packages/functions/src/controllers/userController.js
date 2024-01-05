@@ -3,13 +3,8 @@ import {
   getMediaByAccessToken,
   getUserByAccessToken
 } from '../services/instagramService';
-import {
-  createUserSetting,
-  getSettings,
-  setSettings,
-  deleteSettings
-} from '../repositories/settingRepository';
-import {getMedias, syncMedia, deleteMedias} from '../repositories/mediaRepository';
+import {getSettings, setSettings, deleteSettings} from '../repositories/settingRepository';
+import {getMedias, syncMedias, deleteMedias} from '../repositories/mediaRepository';
 import {getCurrentShop} from '../helpers/auth';
 import {syncMetaSetting} from '../services/shopifyService';
 
@@ -23,7 +18,7 @@ export async function handleAuth(ctx) {
   ]);
 
   await setSettings(user);
-  await syncMedia(media.data, user.id);
+  await syncMedias(media.data, user.id);
 
   return (ctx.body = {
     data: {user, media: media.data}
@@ -57,24 +52,15 @@ export async function handleGetAccount(ctx) {
   });
 }
 
-export async function connectInstagram(ctx) {
-  const {data} = ctx.req.body;
-  const token = await generateTokenByCode(data);
-
-  const [user, media] = await Promise.all([
-    getUserByAccessToken(token.access_token),
-    getMediaByAccessToken(token.access_token)
-  ]);
-  await createUserSetting(user.id, {message: 'test'});
-
-  return (ctx.body = {
-    data: {user: {...user, access_token: token.access_token}, media: media.data}
-  });
-}
-
-export async function handleGetMedia(ctx) {
+export async function handleGetMediaByToken(ctx) {
   const {access_token} = ctx.req.query;
   const medias = await getMediaByAccessToken(access_token);
 
   return (ctx.body = {data: medias.data});
+}
+
+export async function handleGetMedia(ctx) {
+  const media = await getMedias();
+
+  return (ctx.body = {media});
 }

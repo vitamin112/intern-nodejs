@@ -4,12 +4,11 @@ import MainFeedMedia from '../../assets/src/components/MainFeedMedia/MainFeedMed
 
 (async () => {
   async function getData() {
-    const response = await fetch('https://localhost:3000/instagram/account');
+    const response = await fetch('https://localhost:3000/clientApi/media');
     return await response.json();
   }
 
-  const result = await getData();
-  const {media} = result.data;
+  const {media} = await getData();
 
   const settings = window.setting;
 
@@ -17,7 +16,7 @@ import MainFeedMedia from '../../assets/src/components/MainFeedMedia/MainFeedMed
   container.id = 'instagramFeed';
   document.body.prepend(container);
   render(
-    <MainFeedMedia settings={settings || {}} data={media} />,
+    <MainFeedMedia settings={settings || {}} data={media || []} />,
     document.getElementById('instagramFeed')
   );
 })();

@@ -6,7 +6,7 @@ import {Button, Card, DisplayText, TextStyle} from '@shopify/polaris';
 export const UserSection = ({data, loading, setData, successCallback}) => {
   const openLoginPopUp = () => {
     const popup = window.open(
-      `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirect_uri}/instagram/getToken&scope=user_profile,user_media&response_type=code`,
+      `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirect_uri}/clientApi/getToken&scope=user_profile,user_media&response_type=code`,
       'auth',
       'height=500,width=400'
     );
