@@ -1,5 +1,6 @@
 import Router from 'koa-router';
-import {handleAuth, handleGetMedia} from '../controllers/userController';
+import {handleAuth} from '../controllers/userController';
+import {handleGetMedia} from '../controllers/mediaController';
 
 export default function clientApi() {
   const router = new Router({prefix: '/clientApi'});

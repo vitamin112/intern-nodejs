@@ -3,58 +3,45 @@ import {docSize, limitDoc} from '../const/firestore';
 
 const firestore = new Firestore();
 /** @type CollectionReference */
-const mediaRef = firestore.collection('medias');
+const mediaRef = firestore.collection('media');
 
-export async function syncMedias(data, userId) {
+export async function syncMedia(data, userId) {
   try {
-    const writePromises = [];
-
-    for (let i = 0; i < data.length; i += docSize) {
+    const Promises = data.map(async (item, index) => {
       const docRef = mediaRef.doc();
-      const promise = docRef.set({
-        media: data.slice(i, i + docSize),
+      await docRef.set({
+        media: item,
         userId,
-        createdAt: new Date()
+        updatedAt: Date.now(),
+        part: index
       });
-      writePromises.push(promise);
-    }
+    });
 
-    await Promise.all(writePromises);
+    await Promise.all([...Promises]);
 
     return data;
   } catch (error) {
     console.log(error);
-    return {};
+    return {error: 'something went wrong!'};
   }
 }
 
-export async function getMedias() {
+export async function getMedia() {
   try {
     const limit = Math.ceil(limitDoc / docSize);
     const querySnapshot = await mediaRef
-      .orderBy('createdAt')
+      .orderBy('part', 'desc')
       .limit(limit)
       .get();
-    const timeStamps = querySnapshot.docs[0].data().createdAt;
-
-    function isRefresh(timeStamp) {
-      const currentTime = Math.floor(Date.now() / 1000);
-      const inputTimestamp = timeStamp._seconds;
-      const timeDifference = currentTime - inputTimestamp;
-      return timeDifference > 10;
-    }
-    // if (isRefresh(timeStamps)) {
-    //   return false;
-    // }
 
     return querySnapshot.docs.flatMap(doc => doc.data().media);
   } catch (error) {
     console.log(error);
-    return [];
+    return {error: 'something went wrong!'};
   }
 }
 
-export async function deleteMedias() {
+export async function deleteMedia() {
   try {
     const batch = firestore.batch();
 
@@ -65,9 +52,9 @@ export async function deleteMedias() {
 
     await batch.commit();
 
-    return true;
+    return {success: true};
   } catch (error) {
     console.log(error);
-    return false;
+    return {error: 'something went wrong!'};
   }
 }

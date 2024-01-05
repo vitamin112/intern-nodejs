@@ -8,13 +8,13 @@ export async function getSettings() {
   try {
     const querySnapshot = await settingRef.get();
     if (querySnapshot.empty) {
-      return {};
+      return {error: 'Not found!'};
     }
     const [doc] = querySnapshot.docs;
     return doc.data();
   } catch (error) {
     console.log(error);
-    return {};
+    return {error: 'Something went wrong!'};
   }
 }
 
@@ -22,24 +22,24 @@ export async function deleteSettings() {
   try {
     const querySnapshot = await settingRef.get();
     if (querySnapshot.empty) {
-      return true;
+      return {error: 'Not found!'};
     }
     const [doc] = querySnapshot.docs;
     await doc.ref.delete();
-    return true;
+    return {success: true};
   } catch (error) {
     console.log(error);
-    return false;
+    return {error: 'something went wrong!'};
   }
 }
 
 export async function syncSettings(data) {
   try {
     await settingRef.doc(data.id).set({...settings, ...data});
-    return true;
+    return {success: true};
   } catch (error) {
     console.log(error);
-    return false;
+    return {error: 'something went wrong!'};
   }
 }
 
@@ -49,6 +49,6 @@ export async function setSettings(data) {
     return {...settings, ...data};
   } catch (error) {
     console.log(error);
-    return false;
+    return {error: 'something went wrong!'};
   }
 }

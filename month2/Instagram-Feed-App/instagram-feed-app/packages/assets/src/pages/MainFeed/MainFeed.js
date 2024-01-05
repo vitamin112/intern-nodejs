@@ -1,23 +1,9 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {
-  Button,
-  ButtonGroup,
-  Card,
-  DisplayText,
-  FormLayout,
-  Layout,
-  Page,
-  RangeSlider,
-  TextField,
-  TextStyle
-} from '@shopify/polaris';
+import React from 'react';
+import {Button, ButtonGroup, Card, Layout, Page} from '@shopify/polaris';
 import {DesktopMajor, MobileMajor} from '@shopify/polaris-icons';
 import MainFeedMedia from '../../components/MainFeedMedia/MainFeedMedia';
-import {baseUrl, clientId, redirect_uri} from '../../config/app';
 import {defaultSettings} from '../../const/settings';
 import useFetchApi from '../../hooks/api/useFetchApi';
-import useDeleteApi from '../../hooks/api/useDeleteApi';
-import useEditApi from '../../hooks/api/useEditApi';
 import {UserSection} from './components/UserSection/UserSection';
 import {SettingSection} from './components/SettingSection/SettingSection';
 

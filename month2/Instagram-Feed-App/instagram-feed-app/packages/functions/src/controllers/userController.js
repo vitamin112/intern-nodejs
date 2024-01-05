@@ -4,9 +4,8 @@ import {
   getUserByAccessToken
 } from '../services/instagramService';
 import {getSettings, setSettings, deleteSettings} from '../repositories/settingRepository';
-import {getMedias, syncMedias, deleteMedias} from '../repositories/mediaRepository';
-import {getCurrentShop} from '../helpers/auth';
-import {syncMetaSetting} from '../services/shopifyService';
+import {getMedia, syncMedia, deleteMedia} from '../repositories/mediaRepository';
+import {docSize} from '../const/firestore';
 
 export async function handleAuth(ctx) {
   const {code} = ctx.query;
@@ -17,27 +16,24 @@ export async function handleAuth(ctx) {
     getMediaByAccessToken(token.access_token)
   ]);
 
+  function chunkArray(array, chunkSize) {
+    const results = [];
+    for (let i = array.length; i > 0; i -= chunkSize) {
+      results.push(array.slice(Math.max(0, i - chunkSize), i));
+    }
+    return results;
+  }
+
   await setSettings(user);
-  await syncMedias(media.data, user.id);
+  await syncMedia(chunkArray(media.data, docSize), user.id);
 
   return (ctx.body = {
     data: {user, media: media.data}
   });
 }
 
-export async function handleChangeSettings(ctx) {
-  const {data} = ctx.req.body;
-  const shopId = getCurrentShop(ctx);
-
-  const settings = await setSettings(data);
-  await syncMetaSetting(settings, shopId);
-  return (ctx.body = {
-    success: true
-  });
-}
-
 export async function handleLogout(ctx) {
-  const [user, media] = await Promise.all([deleteMedias(), deleteSettings()]);
+  const [user, media] = await Promise.all([deleteMedia(), deleteSettings()]);
 
   return (ctx.body = {
     data: {user, media}
@@ -45,7 +41,7 @@ export async function handleLogout(ctx) {
 }
 
 export async function handleGetAccount(ctx) {
-  const [settings, media] = await Promise.all([getSettings(), getMedias()]);
+  const [settings, media] = await Promise.all([getSettings(), getMedia()]);
 
   return (ctx.body = {
     data: {settings, media}
@@ -54,13 +50,7 @@ export async function handleGetAccount(ctx) {
 
 export async function handleGetMediaByToken(ctx) {
   const {access_token} = ctx.req.query;
-  const medias = await getMediaByAccessToken(access_token);
+  const media = await getMediaByAccessToken(access_token);
 
-  return (ctx.body = {data: medias.data});
-}
-
-export async function handleGetMedia(ctx) {
-  const media = await getMedias();
-
-  return (ctx.body = {media});
+  return (ctx.body = {data: media.data});
 }
