@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, ButtonGroup, Card, Layout, Page} from '@shopify/polaris';
 import {DesktopMajor, MobileMajor} from '@shopify/polaris-icons';
 import MainFeedMedia from '../../components/MainFeedMedia/MainFeedMedia';
@@ -6,6 +6,7 @@ import {defaultSettings} from '../../const/settings';
 import useFetchApi from '../../hooks/api/useFetchApi';
 import {UserSection} from './components/UserSection/UserSection';
 import {SettingSection} from './components/SettingSection/SettingSection';
+import './MainFeed.scss';
 
 /**
  * Render a MainFeed page for overview
@@ -14,12 +15,17 @@ import {SettingSection} from './components/SettingSection/SettingSection';
  * @constructor
  */
 export default function MainFeed() {
+  const [previewScreen, setPreviewScreen] = useState('mobile');
   const {fetchApi, loading, data, setData} = useFetchApi({
     url: '/account',
     fullResp: true,
     defaultData: {}
   });
   const {settings, media} = data;
+
+  const handleChangeScreen = () => {
+    setPreviewScreen(previewScreen === 'mobile' ? 'desktop' : 'mobile');
+  };
 
   return (
     <Page title="Main feed">
@@ -41,12 +47,28 @@ export default function MainFeed() {
         <Layout.Section oneThird>
           <Card title="Preview">
             <Card.Section>
-              <MainFeedMedia data={media} settings={settings || defaultSettings} />
+              <div className={previewScreen}>
+                <div className="content">
+                  <MainFeedMedia data={media} settings={settings || defaultSettings} />
+                </div>
+              </div>
             </Card.Section>
             <Card.Section>
               <ButtonGroup>
-                <Button icon={MobileMajor}>Mobile</Button>
-                <Button icon={DesktopMajor}>Desktop</Button>
+                <Button
+                  primary={previewScreen === 'mobile'}
+                  onClick={handleChangeScreen}
+                  icon={MobileMajor}
+                >
+                  Mobile
+                </Button>
+                <Button
+                  primary={previewScreen === 'desktop'}
+                  onClick={handleChangeScreen}
+                  icon={DesktopMajor}
+                >
+                  Desktop
+                </Button>
               </ButtonGroup>
             </Card.Section>
           </Card>

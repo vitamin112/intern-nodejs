@@ -1,0 +1,23 @@
+.mobile {
+  position: relative;
+  max-width: 260px;
+  height: 400px;
+  max-height: 540px;
+  overflow: scroll;
+  margin: auto;
+  border: 16px black solid;
+  border-top-width: 30px;
+  border-bottom-width: 30px;
+  border-radius: 16px;
+}
+
+.desktop {
+  position: relative;
+  max-width: 600px;
+  max-height: 480px;
+  aspect-ratio: 5/4;
+  overflow: scroll;
+  margin: auto;
+  border: 16px black solid;
+  border-radius: 16px;
+}
