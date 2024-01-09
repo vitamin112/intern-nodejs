@@ -44,7 +44,7 @@ export const SettingSection = ({settings, setData}) => {
               output
               label={<TextStyle variation="strong">Number of rows</TextStyle>}
               min={1}
-              max={5}
+              max={7}
               step={1}
               suffix={(settings?.numOfRow || defaultSettings.numOfRow) + ' Rows'}
               id="numOfRow"
@@ -55,7 +55,7 @@ export const SettingSection = ({settings, setData}) => {
               output
               label={<TextStyle variation="strong">Number of columns</TextStyle>}
               min={1}
-              max={5}
+              max={7}
               step={1}
               suffix={(settings?.numOfColumn || defaultSettings.numOfColumn) + ' Columns'}
               id="numOfColumn"

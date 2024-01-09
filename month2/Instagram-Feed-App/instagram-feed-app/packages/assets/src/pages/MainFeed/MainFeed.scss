@@ -1,8 +1,7 @@
 .mobile {
   position: relative;
-  max-width: 260px;
-  height: 400px;
-  max-height: 540px;
+  max-width: 210px;
+  height: 350px;
   overflow: scroll;
   margin: auto;
   border: 16px black solid;
@@ -13,7 +12,7 @@
 
 .desktop {
   position: relative;
-  max-width: 600px;
+  max-width: 100%;
   max-height: 480px;
   aspect-ratio: 5/4;
   overflow: scroll;

@@ -21,16 +21,33 @@ export default function MainFeed() {
     fullResp: true,
     defaultData: {}
   });
+  const {fetchApi: handleRefresh, loading: refreshing} = useFetchApi({
+    url: '/refresh?token=' + data?.settings?.accessToken,
+    initLoad: false
+  });
+
   const {settings, media} = data;
 
   const handleChangeScreen = () => {
     setPreviewScreen(previewScreen === 'mobile' ? 'desktop' : 'mobile');
   };
 
+  const reFresh = async () => {
+    await handleRefresh();
+    await fetchApi();
+  };
+
   return (
-    <Page title="Main feed">
+    <Page
+      title="Main feed"
+      primaryAction={
+        !data?.settings?.username
+          ? ''
+          : {content: 'ReFresh', loading: refreshing, onAction: reFresh}
+      }
+    >
       <Layout>
-        <Layout.Section>
+        <Layout.Section oneThird>
           <UserSection data={data} loading={loading} setData={setData} successCallback={fetchApi} />
           <SettingSection settings={settings} setData={setData} />
           <Card title="Add to theme">
@@ -44,7 +61,7 @@ export default function MainFeed() {
             </Card.Section>
           </Card>
         </Layout.Section>
-        <Layout.Section oneThird>
+        <Layout.Section>
           <Card title="Preview">
             <Card.Section>
               <div className={previewScreen}>
