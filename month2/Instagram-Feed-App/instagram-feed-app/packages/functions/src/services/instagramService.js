@@ -1,5 +1,6 @@
 import axios from 'axios';
 import app from '../config/app';
+import {limitDoc} from '../const/firestore';
 
 /**
  * @param {string} code
@@ -24,7 +25,7 @@ export async function generateTokenByCode(code) {
     return {};
   } catch (error) {
     console.log(error);
-    return {};
+    return {error};
   }
 }
 
@@ -49,14 +50,32 @@ export async function getUserByAccessToken(access_token) {
  * @param {number} limit
  * @return {Promise<void>}
  */
-export async function getMediaByAccessToken(access_token, limit = 30) {
+export async function getMediaByAccessToken(access_token) {
   try {
     const reps = await axios.get(
-      `https://graph.instagram.com/me/media?fields=id,caption,media_url,timestamp,media_type,thumbnail_url&limit=${limit}&access_token=${access_token}}`
+      `https://graph.instagram.com/me/media?fields=id,caption,media_url,timestamp,media_type,thumbnail_url&limit=${limitDoc}&access_token=${access_token}}`
     );
     return reps.data;
   } catch (error) {
     console.log(error);
-    return {};
+    return {error};
+  }
+}
+
+/**
+ * @param {string} access_token
+ * @param {number} id
+ * @return {Promise<void>}
+ */
+export async function getMediaById(access_token, id) {
+  try {
+    const reps = await axios.get(
+      `https://graph.instagram.com/v18.0/${id}?fields=id,caption,media_url,timestamp,media_type,thumbnail_url&access_token=${access_token}}`
+    );
+
+    return reps.data;
+  } catch (error) {
+    console.log(error);
+    return {error};
   }
 }

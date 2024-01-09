@@ -49,6 +49,7 @@ FIREBASE_MEASUREMENT_ID=<Insert here>
 
 * Create an empty Firestore database
 * Deploy the Firestore default indexes
+
 ```bash
 firebase deploy --only firestore
 ```
@@ -129,6 +130,6 @@ You can enable Analytics for your project from Firebase project
 
 ## TODO
 
-- [ ] Add testing
-- [x] CI/CD
-- [ ] Add document
+* [ ] Add testing
+* [x] CI/CD
+* [ ] Add document

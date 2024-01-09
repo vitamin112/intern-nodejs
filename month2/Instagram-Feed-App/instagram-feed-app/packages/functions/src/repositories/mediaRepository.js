@@ -5,20 +5,18 @@ const firestore = new Firestore();
 /** @type CollectionReference */
 const mediaRef = firestore.collection('media');
 
-export async function syncMedia(data, userId) {
+export async function syncMedia(data, shopId) {
   try {
-    const Promises = data.map(async (item, index) => {
+    const batch = firestore.batch();
+    data.map(async item => {
       const docRef = mediaRef.doc();
       await docRef.set({
-        media: item,
-        userId,
-        updatedAt: Date.now(),
-        part: index
+        media: item.map(item => ({...item, updatedAt: Date.now()})),
+        shopId
       });
     });
 
-    await Promise.all([...Promises]);
-
+    await batch.commit();
     return data;
   } catch (error) {
     console.log(error);
@@ -26,15 +24,24 @@ export async function syncMedia(data, userId) {
   }
 }
 
-export async function getMedia() {
+export async function getMedia(shopId) {
   try {
     const limit = Math.ceil(limitDoc / docSize);
     const querySnapshot = await mediaRef
-      .orderBy('part', 'desc')
+      .where('shopId', '==', shopId)
       .limit(limit)
       .get();
 
-    return querySnapshot.docs.flatMap(doc => doc.data().media);
+    return querySnapshot.docs.map(doc => ({...doc.data(), id: doc.id}));
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+export async function updateMedia(docId, media) {
+  try {
+    await mediaRef.doc(docId).update({media});
   } catch (error) {
     console.log(error);
     return {error: 'something went wrong!'};

@@ -1,4 +1,4 @@
-import {getShopById, getShopByShopifyDomain} from '@avada/shopify-auth';
+import {getShopById} from '@avada/shopify-auth';
 import Shopify from 'shopify-api-node';
 
 export async function syncMetaSetting(data, shopId) {

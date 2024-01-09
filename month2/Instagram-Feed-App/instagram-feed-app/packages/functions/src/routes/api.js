@@ -5,6 +5,7 @@ import * as subscriptionController from '@functions/controllers/subscriptionCont
 import * as appNewsController from '@functions/controllers/appNewsController';
 import * as userController from '@functions/controllers/userController';
 import * as settingController from '@functions/controllers/settingController';
+import * as mediaController from '@functions/controllers/mediaController';
 import {getApiPrefix} from '@functions/const/app';
 
 export default function apiRouter(isEmbed = false) {
@@ -20,5 +21,6 @@ export default function apiRouter(isEmbed = false) {
   router.put('/settings', settingController.handleChangeSettings);
   router.get('/settings', settingController.handleGetSetting);
   router.delete('/logout', userController.handleLogout);
+  router.get('/reFresh', mediaController.handleReFresh);
   return router;
 }
