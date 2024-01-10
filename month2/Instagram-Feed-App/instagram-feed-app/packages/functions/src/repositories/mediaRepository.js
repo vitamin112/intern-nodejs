@@ -1,5 +1,4 @@
 import {Firestore} from '@google-cloud/firestore';
-import {docSize, limitDoc} from '../const/firestore';
 
 const firestore = new Firestore();
 /** @type CollectionReference */
@@ -12,7 +11,8 @@ export async function syncMedia(data, shopId) {
       const docRef = mediaRef.doc();
       await docRef.set({
         media: item.map(item => ({...item, updatedAt: Date.now()})),
-        shopId
+        shopId,
+        count: item.length
       });
     });
 
@@ -26,11 +26,7 @@ export async function syncMedia(data, shopId) {
 
 export async function getMedia(shopId) {
   try {
-    const limit = Math.ceil(limitDoc / docSize);
-    const querySnapshot = await mediaRef
-      .where('shopId', '==', shopId)
-      .limit(limit)
-      .get();
+    const querySnapshot = await mediaRef.where('shopId', '==', shopId).get();
 
     return querySnapshot.docs.map(doc => ({...doc.data(), id: doc.id}));
   } catch (error) {
@@ -41,7 +37,7 @@ export async function getMedia(shopId) {
 
 export async function updateMedia(docId, media) {
   try {
-    await mediaRef.doc(docId).update({media});
+    await mediaRef.doc(docId).update({media, count: media.length});
   } catch (error) {
     console.log(error);
     return {error: 'something went wrong!'};

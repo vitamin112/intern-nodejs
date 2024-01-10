@@ -25,6 +25,10 @@ export default function MainFeed() {
     url: '/refresh?token=' + data?.settings?.accessToken,
     initLoad: false
   });
+  const {fetchApi: handleSync, loading: syncing} = useFetchApi({
+    url: '/syncMedia?token=' + data?.settings?.accessToken,
+    initLoad: false
+  });
 
   const {settings, media} = data;
 
@@ -37,6 +41,11 @@ export default function MainFeed() {
     await fetchApi();
   };
 
+  const syncMedia = async () => {
+    await handleSync();
+    await fetchApi();
+  };
+
   return (
     <Page
       title="Main feed"
@@ -45,6 +54,14 @@ export default function MainFeed() {
           ? ''
           : {content: 'ReFresh', loading: refreshing, onAction: reFresh}
       }
+      secondaryActions={[
+        {
+          content: 'Get new media',
+          disabled: !data?.settings?.username,
+          loading: syncing,
+          onAction: syncMedia
+        }
+      ]}
     >
       <Layout>
         <Layout.Section oneThird>

@@ -17,10 +17,11 @@ export default function apiRouter(isEmbed = false) {
   router.get('/appNews', appNewsController.getList);
   router.get('/appNews', appNewsController.getList);
 
+  router.post('/logout', userController.handleLogout);
   router.get('/account', userController.handleGetAccount);
   router.put('/settings', settingController.handleChangeSettings);
   router.get('/settings', settingController.handleGetSetting);
-  router.delete('/logout', userController.handleLogout);
   router.get('/reFresh', mediaController.handleReFresh);
+  router.get('/syncMedia', mediaController.handleGetNewMedia);
   return router;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import useDeleteApi from '../../../../hooks/api/useDeleteApi';
+import useCreateApi from '../../../../hooks/api/useCreateApi';
 import {clientId, redirect_uri} from '../../../../config/app';
 import {Button, Card, DisplayText, TextStyle} from '@shopify/polaris';
 
@@ -22,7 +22,7 @@ export const UserSection = ({data, loading, setData, successCallback}) => {
     }, 500);
   };
 
-  const {deleting, handleDelete: handleLogout} = useDeleteApi({
+  const {creating, handleCreate: handleLogout} = useCreateApi({
     url: '/logout'
   });
 
