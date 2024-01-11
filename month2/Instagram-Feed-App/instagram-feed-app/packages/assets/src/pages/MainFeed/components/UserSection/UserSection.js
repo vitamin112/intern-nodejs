@@ -1,9 +1,19 @@
 import React from 'react';
 import useCreateApi from '../../../../hooks/api/useCreateApi';
 import {clientId, redirect_uri} from '../../../../config/app';
-import {Button, Card, DisplayText, TextStyle} from '@shopify/polaris';
+import {Button, ButtonGroup, Card, DisplayText, TextStyle} from '@shopify/polaris';
+import useFetchApi from '../../../../hooks/api/useFetchApi';
 
 export const UserSection = ({data, loading, setData, successCallback}) => {
+  const {fetchApi: handleRefresh, loading: refreshing} = useFetchApi({
+    url: '/refresh?token=' + data?.settings?.accessToken,
+    initLoad: false
+  });
+  const {fetchApi: handleSync, loading: syncing} = useFetchApi({
+    url: '/syncMedia?token=' + data?.settings?.accessToken,
+    initLoad: false
+  });
+
   const openLoginPopUp = () => {
     const popup = window.open(
       `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirect_uri}/clientApi/getToken&scope=user_profile,user_media&response_type=code&state=${activeShop.shopID}`,
@@ -29,6 +39,16 @@ export const UserSection = ({data, loading, setData, successCallback}) => {
   const logOut = async () => {
     setData({settings: null, media: null});
     await handleLogout();
+  };
+
+  const reFresh = async () => {
+    await handleRefresh();
+    await fetchApi();
+  };
+
+  const syncMedia = async () => {
+    await handleSync();
+    await fetchApi();
   };
 
   return (
@@ -58,14 +78,18 @@ export const UserSection = ({data, loading, setData, successCallback}) => {
           </Button>
         ) : (
           <DisplayText size="small">
-            Connected to <TextStyle variation="strong">@{data?.settings?.username}</TextStyle> |{' '}
-            <Button monochrome plain onClick={openLoginPopUp}>
-              Change account
-            </Button>{' '}
-            |{' '}
-            <Button monochrome plain onClick={logOut}>
-              Disconnect
-            </Button>
+            Connected to <TextStyle variation="strong">@{data?.settings?.username}</TextStyle>
+            <ButtonGroup>
+              <Button destructive onClick={logOut}>
+                Disconnect
+              </Button>
+              <Button primary onClick={syncMedia} loading={syncing}>
+                Sync Media
+              </Button>
+              <Button onClick={reFresh} loading={refreshing}>
+                ReFresh
+              </Button>
+            </ButtonGroup>
           </DisplayText>
         )}
       </Card.Section>

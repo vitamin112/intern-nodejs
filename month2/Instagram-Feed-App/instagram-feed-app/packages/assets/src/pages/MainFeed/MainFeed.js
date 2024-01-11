@@ -21,14 +21,6 @@ export default function MainFeed() {
     fullResp: true,
     defaultData: {}
   });
-  const {fetchApi: handleRefresh, loading: refreshing} = useFetchApi({
-    url: '/refresh?token=' + data?.settings?.accessToken,
-    initLoad: false
-  });
-  const {fetchApi: handleSync, loading: syncing} = useFetchApi({
-    url: '/syncMedia?token=' + data?.settings?.accessToken,
-    initLoad: false
-  });
 
   const {settings, media} = data;
 
@@ -36,33 +28,8 @@ export default function MainFeed() {
     setPreviewScreen(previewScreen === 'mobile' ? 'desktop' : 'mobile');
   };
 
-  const reFresh = async () => {
-    await handleRefresh();
-    await fetchApi();
-  };
-
-  const syncMedia = async () => {
-    await handleSync();
-    await fetchApi();
-  };
-
   return (
-    <Page
-      title="Main feed"
-      primaryAction={
-        !data?.settings?.username
-          ? ''
-          : {content: 'ReFresh', loading: refreshing, onAction: reFresh}
-      }
-      secondaryActions={[
-        {
-          content: 'Get new media',
-          disabled: !data?.settings?.username,
-          loading: syncing,
-          onAction: syncMedia
-        }
-      ]}
-    >
+    <Page title="Main feed">
       <Layout>
         <Layout.Section oneThird>
           <UserSection data={data} loading={loading} setData={setData} successCallback={fetchApi} />
