@@ -1,5 +1,5 @@
 import {
-  generateTokenByCode,
+  getTokenByCode,
   getMediaByAccessToken,
   getUserByAccessToken
 } from '../services/instagramService';
@@ -13,7 +13,7 @@ import sortByTimeStamp from '../helpers/utils/sortByTimeStamp';
 export async function handleAuth(ctx) {
   const {code, state: shopId} = ctx.query;
 
-  const token = await generateTokenByCode(code);
+  const token = await getTokenByCode(code);
 
   const [user, media] = await Promise.all([
     getUserByAccessToken(token.access_token),
@@ -27,7 +27,8 @@ export async function handleAuth(ctx) {
 }
 
 export async function handleLogout(ctx) {
-  const [user, media] = await Promise.all([deleteMedia(), deleteSettings()]);
+  const shopId = getCurrentShop(ctx);
+  const [user, media] = await Promise.all([deleteMedia(shopId), deleteSettings(shopId)]);
 
   return (ctx.body = {
     data: {user, media}
@@ -37,7 +38,7 @@ export async function handleLogout(ctx) {
 export async function handleGetAccount(ctx) {
   const shopId = getCurrentShop(ctx);
 
-  const [settings, media] = await Promise.all([getSettings(), getMedia(shopId)]);
+  const [settings, media] = await Promise.all([getSettings(shopId), getMedia(shopId)]);
 
   return (ctx.body = {
     data: {settings, media: sortByTimeStamp(media.flatMap(item => item.media))}

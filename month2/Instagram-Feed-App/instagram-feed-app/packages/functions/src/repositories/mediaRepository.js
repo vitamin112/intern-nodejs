@@ -44,11 +44,11 @@ export async function updateMedia(docId, media) {
   }
 }
 
-export async function deleteMedia() {
+export async function deleteMedia(shopId) {
   try {
     const batch = firestore.batch();
 
-    const querySnapshot = await mediaRef.get();
+    const querySnapshot = await mediaRef.where('shopId', '==', shopId).get();
     const docs = querySnapshot.docs;
 
     docs.forEach(doc => batch.delete(doc.ref));

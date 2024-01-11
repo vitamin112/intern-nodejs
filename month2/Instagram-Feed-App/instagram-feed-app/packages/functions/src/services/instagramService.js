@@ -6,7 +6,7 @@ import {limitDoc} from '../const/firestore';
  * @param {string} code
  * @return {Promise<void>}
  */
-export async function generateTokenByCode(code) {
+export async function getTokenByCode(code) {
   try {
     const formData = new URLSearchParams();
     formData.append('client_id', app.clientId);

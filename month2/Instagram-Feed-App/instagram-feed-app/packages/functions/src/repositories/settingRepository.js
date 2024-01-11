@@ -4,9 +4,9 @@ const firestore = new Firestore();
 /** @type CollectionReference */
 const settingRef = firestore.collection('settings');
 
-export async function getSettings() {
+export async function getSettings(shopId) {
   try {
-    const querySnapshot = await settingRef.get();
+    const querySnapshot = await settingRef.where('shopId', '==', shopId).get();
     if (querySnapshot.empty) {
       return {error: 'Not found!'};
     }
@@ -32,9 +32,9 @@ export async function getSettingById(id) {
   }
 }
 
-export async function deleteSettings() {
+export async function deleteSettings(shopId) {
   try {
-    const querySnapshot = await settingRef.get();
+    const querySnapshot = await settingRef.where('shopId', '==', shopId).get();
     if (querySnapshot.empty) {
       return {error: 'Not found!'};
     }
