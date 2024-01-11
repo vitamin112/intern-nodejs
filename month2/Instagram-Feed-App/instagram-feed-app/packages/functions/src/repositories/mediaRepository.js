@@ -37,7 +37,9 @@ export async function getMedia(shopId) {
 
 export async function updateMedia(docId, media) {
   try {
-    await mediaRef.doc(docId).update({media, count: media.length});
+    media.length
+      ? await mediaRef.doc(docId).update({media: media || [], count: media.length})
+      : await mediaRef.doc(docId).delete();
   } catch (error) {
     console.log(error);
     return {error: 'something went wrong!'};

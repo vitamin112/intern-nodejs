@@ -76,20 +76,48 @@ export async function handleGetNewMedia(ctx) {
   const oldMedia = await getMedia(shopId);
   const {data} = await getMediaByAccessToken(token);
 
-  const newMedia = data.filter(item =>
-    oldMedia
-      .flatMap(item => item.media)
-      .map(item => item.id)
-      .includes(item.id)
-      ? false
-      : true
+  const newMedia = data.filter(
+    item =>
+      !oldMedia
+        .flatMap(item => item.media)
+        .map(item => item.id)
+        .includes(item.id)
   );
 
-  if (newMedia.length > 0) {
-    oldMedia.filter(item => item.count < docSize).length > 0
-      ? await updateMedia(oldMedia[0].id, [...oldMedia[0].media, ...newMedia])
-      : await syncMedia(chunkArray(newMedia, docSize), shopId);
-  }
+  const newMediaIds = data.map(item => item.id);
+
+  const docLess = oldMedia
+    .map(doc =>
+      doc.media.find(item => !newMediaIds.includes(item.id))
+        ? {
+            ...doc,
+            media: doc.media.filter(item => newMediaIds.includes(item.id)),
+            count: doc.media.filter(item => newMediaIds.includes(item.id)).length
+          }
+        : doc
+    )
+    .filter(item => item.count < docSize);
+
+  const fillLessDoc = async () => {
+    const mediaRest = await docLess.reduce(async (newMedia, currentValue) => {
+      const prevMedia = await newMedia;
+      const sliceMedia = prevMedia.splice(0, docSize - currentValue.count);
+
+      if (sliceMedia.length)
+        await updateMedia(currentValue.id, [...currentValue.media, ...sliceMedia]);
+
+      return prevMedia;
+    }, Promise.resolve(newMedia));
+
+    if (mediaRest.length) {
+      const chunkedMediaRest = chunkArray(mediaRest, docSize);
+      await syncMedia(chunkedMediaRest, shopId);
+    }
+  };
+
+  newMedia.length
+    ? await fillLessDoc()
+    : await Promise.all(docLess.map(async doc => await updateMedia(doc.id, doc.media)));
 
   return (ctx.body = {media: true});
 }
