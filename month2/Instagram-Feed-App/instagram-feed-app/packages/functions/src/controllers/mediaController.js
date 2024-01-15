@@ -86,16 +86,17 @@ export async function handleGetNewMedia(ctx) {
 
   const newMediaIds = data.map(item => item.id);
 
+  const docMedia = doc => {
+    const media = doc.media.filter(item => newMediaIds.includes(item.id));
+    return {
+      ...doc,
+      media,
+      count: media.length
+    };
+  };
+
   const docLess = oldMedia
-    .map(doc =>
-      doc.media.find(item => !newMediaIds.includes(item.id))
-        ? {
-            ...doc,
-            media: doc.media.filter(item => newMediaIds.includes(item.id)),
-            count: doc.media.filter(item => newMediaIds.includes(item.id)).length
-          }
-        : doc
-    )
+    .map(doc => (doc.media.find(item => !newMediaIds.includes(item.id)) ? docMedia(doc) : doc))
     .filter(item => item.count < docSize);
 
   const fillLessDoc = async () => {

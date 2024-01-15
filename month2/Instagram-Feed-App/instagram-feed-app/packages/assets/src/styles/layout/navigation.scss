@@ -1,10 +1,11 @@
 .Avada-Frame__Content {
+  z-index: 11;
   flex: 1 1;
   padding-left: 6.8rem;
-  -webkit-transition: padding .3s ease 75ms;
-  -moz-transition: padding .3s ease 75ms;
-  -o-transition: padding .3s ease 75ms;
-  transition: padding .3s ease 75ms;
+  -webkit-transition: padding 0.3s ease 75ms;
+  -moz-transition: padding 0.3s ease 75ms;
+  -o-transition: padding 0.3s ease 75ms;
+  transition: padding 0.3s ease 75ms;
 
   &.Avada-Frame__Content--isExpanded {
     padding-left: 24rem;
@@ -17,10 +18,10 @@
   height: calc(100vh - 5.6rem);
 
   .Polaris-Navigation {
-    -webkit-transition: width .3s ease 75ms;
-    -moz-transition: width .3s ease 75ms;
-    -o-transition: width .3s ease 75ms;
-    transition: width .3s ease 75ms;
+    -webkit-transition: width 0.3s ease 75ms;
+    -moz-transition: width 0.3s ease 75ms;
+    -o-transition: width 0.3s ease 75ms;
+    transition: width 0.3s ease 75ms;
     overflow: hidden;
     min-width: 0;
     width: 6.8rem; // collapsed width
@@ -33,18 +34,18 @@
 
     .Polaris-Navigation__ListItem {
       .Polaris-Navigation--subNavigationActive:not(.Polaris-Navigation__Item--selected) {
-        -webkit-transition: background-color .3s ease;
-        -moz-transition: background-color .3s ease;
-        -o-transition: background-color .3s ease;
-        transition: background-color .3s ease;
+        -webkit-transition: background-color 0.3s ease;
+        -moz-transition: background-color 0.3s ease;
+        -o-transition: background-color 0.3s ease;
+        transition: background-color 0.3s ease;
         background-color: var(--p-background-selected);
       }
 
       .Polaris-Navigation__SecondaryNavigation {
-        -webkit-transition: max-height .2s ease;
-        -moz-transition: max-height .2s ease;
-        -o-transition: max-height .2s ease;
-        transition: max-height .2s ease;
+        -webkit-transition: max-height 0.2s ease;
+        -moz-transition: max-height 0.2s ease;
+        -o-transition: max-height 0.2s ease;
+        transition: max-height 0.2s ease;
         overflow: hidden;
         margin-bottom: 0;
         max-height: 0;
@@ -62,7 +63,8 @@
     }
   }
 
-  &:hover, &.Avada-Frame__Navigation--isExpanded {
+  &:hover,
+  &.Avada-Frame__Navigation--isExpanded {
     min-width: fit-content;
 
     .Polaris-Navigation {

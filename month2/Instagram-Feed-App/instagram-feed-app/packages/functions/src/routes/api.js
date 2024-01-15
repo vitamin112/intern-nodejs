@@ -21,7 +21,7 @@ export default function apiRouter(isEmbed = false) {
   router.get('/account', userController.handleGetAccount);
   router.put('/settings', settingController.handleChangeSettings);
   router.get('/settings', settingController.handleGetSetting);
-  router.get('/reFresh', mediaController.handleReFresh);
   router.get('/syncMedia', mediaController.handleGetNewMedia);
+  // router.get('/reFresh', mediaController.handleReFresh);
   return router;
 }

@@ -5,10 +5,6 @@ import {Button, ButtonGroup, Card, DisplayText, TextStyle} from '@shopify/polari
 import useFetchApi from '../../../../hooks/api/useFetchApi';
 
 export const UserSection = ({data, loading, setData, successCallback}) => {
-  const {fetchApi: handleRefresh, loading: refreshing} = useFetchApi({
-    url: '/refresh?token=' + data?.settings?.accessToken,
-    initLoad: false
-  });
   const {fetchApi: handleSync, loading: syncing} = useFetchApi({
     url: '/syncMedia?token=' + data?.settings?.accessToken,
     initLoad: false
@@ -41,14 +37,9 @@ export const UserSection = ({data, loading, setData, successCallback}) => {
     await handleLogout();
   };
 
-  const reFresh = async () => {
-    await handleRefresh();
-    await fetchApi();
-  };
-
   const syncMedia = async () => {
     await handleSync();
-    await fetchApi();
+    await successCallback();
   };
 
   return (
@@ -77,8 +68,10 @@ export const UserSection = ({data, loading, setData, successCallback}) => {
             Connect with Instagram
           </Button>
         ) : (
-          <DisplayText size="small">
-            Connected to <TextStyle variation="strong">@{data?.settings?.username}</TextStyle>
+          <>
+            <DisplayText size="small">
+              Connected to <TextStyle variation="strong">@{data?.settings?.username}</TextStyle>
+            </DisplayText>
             <ButtonGroup>
               <Button destructive onClick={logOut}>
                 Disconnect
@@ -86,11 +79,8 @@ export const UserSection = ({data, loading, setData, successCallback}) => {
               <Button primary onClick={syncMedia} loading={syncing}>
                 Sync Media
               </Button>
-              <Button onClick={reFresh} loading={refreshing}>
-                ReFresh
-              </Button>
             </ButtonGroup>
-          </DisplayText>
+          </>
         )}
       </Card.Section>
     </Card>
