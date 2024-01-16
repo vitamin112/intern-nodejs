@@ -112,7 +112,8 @@
     width: 100%;
     height: 100%;
     content: '';
-    background-color: #000000b9;
+    background-color: rgba(0, 0, 0, 0.445);
+    background-image: repeating-linear-gradient(#0000006e, #ffffff71 10%, #80808050 20%);
   }
 }
 
