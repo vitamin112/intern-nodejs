@@ -63,3 +63,21 @@ export async function deleteMedia(shopId) {
     return {error: 'something went wrong!'};
   }
 }
+
+export async function bulkUpdate(data) {
+  try {
+    const batch = firestore.batch();
+
+    data.forEach(item => {
+      const docRef = mediaRef.doc(item.docId);
+      batch.update(docRef, {media: item.media});
+    });
+
+    await batch.commit();
+
+    return {success: true};
+  } catch (error) {
+    console.log(error);
+    return {error: 'something went wrong!'};
+  }
+}

@@ -1,5 +1,5 @@
 import {getMediaByAccessToken, getMediaById} from '../services/instagramService';
-import {getMedia, syncMedia, updateMedia} from '../repositories/mediaRepository';
+import {getMedia, syncMedia, updateMedia, bulkUpdate} from '../repositories/mediaRepository';
 import {getSettingById} from '../repositories/settingRepository';
 import chunkArray from '../helpers/utils/chunkArray';
 import {docSize} from '../const/firestore';
@@ -64,10 +64,14 @@ export async function handleGetMedia(ctx) {
       media.map(async doc => (doc.media.find(isExpired) ? await updateDoc(doc, accessToken) : doc))
     );
 
-    return (ctx.body = {media: sortByTimeStamp(newMedia.flatMap(item => item.media))});
+    return (ctx.body = {media: sortByTimeStamp(newMedia.flatMap(item => item.media))}).filter(
+      item => !item.isHide
+    );
   }
 
-  return (ctx.body = {media: sortByTimeStamp(media.flatMap(item => item.media))});
+  return (ctx.body = {
+    media: sortByTimeStamp(media.flatMap(item => item.media)).filter(item => !item.isHide)
+  });
 }
 
 export async function handleGetNewMedia(ctx) {
@@ -120,5 +124,13 @@ export async function handleGetNewMedia(ctx) {
     ? await fillLessDoc()
     : await Promise.all(docLess.map(async doc => await updateMedia(doc.id, doc.media)));
 
-  return (ctx.body = {media: true});
+  return (ctx.body = {success: true});
+}
+
+export async function handleUpdateMedia(ctx) {
+  const {data} = ctx.req.body;
+
+  await bulkUpdate(data);
+
+  return (ctx.body = {success: true});
 }

@@ -41,7 +41,12 @@ export async function handleGetAccount(ctx) {
   const [settings, media] = await Promise.all([getSettings(shopId), getMedia(shopId)]);
 
   return (ctx.body = {
-    data: {settings, media: sortByTimeStamp(media.flatMap(item => item.media))}
+    data: {
+      settings,
+      media: sortByTimeStamp(
+        media.flatMap(doc => doc.media.map(item => ({...item, docId: doc.id})))
+      )
+    }
   });
 }
 

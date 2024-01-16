@@ -1,7 +1,14 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import './MainFeedMedia.scss';
+import {Button} from '@shopify/polaris';
+import {HideMinor, ViewMinor} from '@shopify/polaris-icons';
 
-const MainFeedMedia = ({data = [], settings = {}}) => {
+const MainFeedMedia = ({
+  data = [],
+  handelSelectedItem = () => {},
+  settings = {},
+  isPreview = false
+}) => {
   const {numOfRow = 2, numOfColumn = 3, spacing = 10, title = ''} = settings;
   const [displayItem, setDisplayItem] = useState([]);
 
@@ -45,7 +52,9 @@ const MainFeedMedia = ({data = [], settings = {}}) => {
               return (
                 <div
                   key={index}
-                  className="Avava-SP__MediaItem"
+                  className={`Avava-SP__MediaItem  ${
+                    item?.isHide ? 'Avava-SP__MediaItem--Hide' : ''
+                  }`}
                   style={{
                     backgroundImage:
                       item.media_type === 'IMAGE' ? `url(${item.media_url})` : 'none',
@@ -64,6 +73,14 @@ const MainFeedMedia = ({data = [], settings = {}}) => {
                       Your browser does not support the video tag.
                     </video>
                   )}
+                  {isPreview ? (
+                    <Button
+                      plain
+                      id="Avava-sp_ViewPlayer"
+                      icon={item?.isHide ? ViewMinor : HideMinor}
+                      onClick={() => handelSelectedItem(item)}
+                    ></Button>
+                  ) : null}
                 </div>
               );
             })}
