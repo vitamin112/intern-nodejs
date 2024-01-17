@@ -1,23 +1,21 @@
-import {
-  getTokenByCode,
-  getMediaByAccessToken,
-  getUserByAccessToken
-} from '../services/instagramService';
 import {getSettings, setSettings, deleteSettings} from '../repositories/settingRepository';
 import {getMedia, syncMedia, deleteMedia} from '../repositories/mediaRepository';
 import {docSize} from '../const/firestore';
 import chunkArray from '../helpers/utils/chunkArray';
 import {getCurrentShop} from '../helpers/auth';
 import sortByTimeStamp from '../helpers/utils/sortByTimeStamp';
+import Instagram from '../helpers/instagram';
+
+const instagram = new Instagram();
 
 export async function handleAuth(ctx) {
   const {code, state: shopId} = ctx.query;
 
-  const token = await getTokenByCode(code);
+  const token = await instagram.getTokenByCode(code);
 
   const [user, media] = await Promise.all([
-    getUserByAccessToken(token.access_token),
-    getMediaByAccessToken(token.access_token)
+    instagram.getUserByAccessToken(token.access_token),
+    instagram.getMediaByAccessToken(token.access_token)
   ]);
 
   await setSettings({...user, shopId});
@@ -52,7 +50,7 @@ export async function handleGetAccount(ctx) {
 
 export async function handleGetMediaByToken(ctx) {
   const {access_token} = ctx.req.query;
-  const media = await getMediaByAccessToken(access_token);
+  const media = await instagram.getMediaByAccessToken(access_token);
 
   return (ctx.body = {data: media.data});
 }

@@ -28,7 +28,7 @@ export const UserSection = ({data, loading, setData, successCallback}) => {
     }, 500);
   };
 
-  const {creating, handleCreate: handleLogout} = useCreateApi({
+  const {handleCreate: handleLogout} = useCreateApi({
     url: '/logout'
   });
 

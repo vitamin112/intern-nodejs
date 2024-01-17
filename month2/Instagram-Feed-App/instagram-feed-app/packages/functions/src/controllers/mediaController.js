@@ -1,16 +1,20 @@
-import {getMediaByAccessToken, getMediaById} from '../services/instagramService';
-import {getMedia, syncMedia, updateMedia, bulkUpdate} from '../repositories/mediaRepository';
-import {getSettingById} from '../repositories/settingRepository';
-import chunkArray from '../helpers/utils/chunkArray';
 import {docSize} from '../const/firestore';
-import {getShopInfoByShopDomain} from '../repositories/shopInfoRepository';
-import sortByTimeStamp from '../helpers/utils/sortByTimeStamp';
 import {getCurrentShop} from '../helpers/auth';
+import Instagram from '../helpers/instagram';
+import {handleData} from '../helpers/repositories/handleData';
+import {handleExpired} from '../helpers/repositories/handleExpired';
+import chunkArray from '../helpers/utils/chunkArray';
+import sortByTimeStamp from '../helpers/utils/sortByTimeStamp';
+import {bulkUpdate, getMedia, syncMedia, updateMedia} from '../repositories/mediaRepository';
+import {getSettingById} from '../repositories/settingRepository';
+import {getShopInfoByShopDomain} from '../repositories/shopInfoRepository';
+
+const instagram = new Instagram();
 
 const isExpired = item =>
   item.media_type === 'VIDEO'
-    ? Date.now() - item?.updatedAt > 1000 * 60 * 60 * 24 * 3
-    : Date.now() - item?.updatedAt > 1000 * 60 * 60 * 24 * 1.5;
+    ? Date.now() - item?.updatedAt > 1000 * 60 * 60 * 24 * 1.5
+    : Date.now() - item?.updatedAt > 1000 * 60 * 60 * 24 * 3;
 
 const updateDoc = async (doc, accessToken) => {
   const updatedMedia = await Promise.all(
@@ -18,7 +22,7 @@ const updateDoc = async (doc, accessToken) => {
       isExpired(item)
         ? {
             ...item,
-            ...(await getMediaById(accessToken, item.id)),
+            ...(await instagram.getMediaById(accessToken, item.id)),
             updatedAt: Date.now()
           }
         : item
@@ -33,7 +37,7 @@ const updateDoc = async (doc, accessToken) => {
 
 export async function handleGetMediaByToken(ctx) {
   const {access_token} = ctx.req.query;
-  const media = await getMediaByAccessToken(access_token);
+  const media = await instagram.getMediaByAccessToken(access_token);
 
   return (ctx.body = {data: media.data});
 }
@@ -58,15 +62,16 @@ export async function handleGetMedia(ctx) {
   const {shopId} = await getShopInfoByShopDomain(domain);
   const media = await getMedia(shopId);
 
-  if (media.flatMap(item => item.media).some(item => isExpired(item))) {
-    const {accessToken} = await getSettingById(shopId);
-    const newMedia = await Promise.all(
-      media.map(async doc => (doc.media.find(isExpired) ? await updateDoc(doc, accessToken) : doc))
-    );
+  const expiredDoc = media.filter(item => item.media.find(item => isExpired(item)));
 
-    return (ctx.body = {media: sortByTimeStamp(newMedia.flatMap(item => item.media))}).filter(
-      item => !item.isHide
-    );
+  if (expiredDoc.length) {
+    const {accessToken} = await getSettingById(shopId);
+    const instagramMedia = await instagram.getMediaByAccessToken(accessToken);
+    const {updatedMedia, docToUpdate} = handleExpired(expiredDoc, instagramMedia.data, media);
+
+    await Promise.all(docToUpdate.map(async doc => await updateMedia(doc.id, doc.media)));
+
+    return (ctx.body = {media: sortByTimeStamp(updatedMedia).filter(item => !item.isHide)});
   }
 
   return (ctx.body = {
@@ -78,53 +83,19 @@ export async function handleGetNewMedia(ctx) {
   const {token} = ctx.req.query;
   const shopId = getCurrentShop(ctx);
   const oldMedia = await getMedia(shopId);
-  const {data} = await getMediaByAccessToken(token);
+  const {data} = await instagram.getMediaByAccessToken(token);
 
-  const newMedia = data.filter(
-    item =>
-      !oldMedia
-        .flatMap(item => item.media)
-        .map(item => item.id)
-        .includes(item.id)
-  );
+  const {newMedia, updatedDoc} = handleData(data, oldMedia);
 
-  const newMediaIds = data.map(item => item.id);
+  if (newMedia.length) {
+    await syncMedia(chunkArray(newMedia, docSize), shopId);
+  }
 
-  const docMedia = doc => {
-    const media = doc.media.filter(item => newMediaIds.includes(item.id));
-    return {
-      ...doc,
-      media,
-      count: media.length
-    };
-  };
+  if (updatedDoc.length) {
+    await Promise.all(updatedDoc.map(async doc => await updateMedia(doc.id, doc.media)));
+  }
 
-  const docLess = oldMedia
-    .map(doc => (doc.media.find(item => !newMediaIds.includes(item.id)) ? docMedia(doc) : doc))
-    .filter(item => item.count < docSize);
-
-  const fillDocLess = async () => {
-    const mediaRest = await docLess.reduce(async (newMedia, currentValue) => {
-      const prevMedia = await newMedia;
-      const sliceMedia = prevMedia.splice(0, docSize - currentValue.count);
-
-      if (sliceMedia.length)
-        await updateMedia(currentValue.id, [...currentValue.media, ...sliceMedia]);
-
-      return prevMedia;
-    }, Promise.resolve(newMedia));
-
-    if (mediaRest.length) {
-      const chunkedMediaRest = chunkArray(mediaRest, docSize);
-      await syncMedia(chunkedMediaRest, shopId);
-    }
-  };
-
-  newMedia.length
-    ? await fillDocLess()
-    : await Promise.all(docLess.map(async doc => await updateMedia(doc.id, doc.media)));
-
-  return (ctx.body = {success: true});
+  return (ctx.body = {success: true, data: oldMedia});
 }
 
 export async function handleUpdateMedia(ctx) {
