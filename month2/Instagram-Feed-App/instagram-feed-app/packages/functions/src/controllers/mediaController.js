@@ -103,7 +103,7 @@ export async function handleGetNewMedia(ctx) {
     .map(doc => (doc.media.find(item => !newMediaIds.includes(item.id)) ? docMedia(doc) : doc))
     .filter(item => item.count < docSize);
 
-  const fillLessDoc = async () => {
+  const fillDocLess = async () => {
     const mediaRest = await docLess.reduce(async (newMedia, currentValue) => {
       const prevMedia = await newMedia;
       const sliceMedia = prevMedia.splice(0, docSize - currentValue.count);
@@ -121,7 +121,7 @@ export async function handleGetNewMedia(ctx) {
   };
 
   newMedia.length
-    ? await fillLessDoc()
+    ? await fillDocLess()
     : await Promise.all(docLess.map(async doc => await updateMedia(doc.id, doc.media)));
 
   return (ctx.body = {success: true});
