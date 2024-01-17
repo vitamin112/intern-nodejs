@@ -16,45 +16,11 @@ const isExpired = item =>
     ? Date.now() - item?.updatedAt > 1000 * 60 * 60 * 24 * 1.5
     : Date.now() - item?.updatedAt > 1000 * 60 * 60 * 24 * 3;
 
-const updateDoc = async (doc, accessToken) => {
-  const updatedMedia = await Promise.all(
-    doc.media.map(async item =>
-      isExpired(item)
-        ? {
-            ...item,
-            ...(await instagram.getMediaById(accessToken, item.id)),
-            updatedAt: Date.now()
-          }
-        : item
-    )
-  );
-  await updateMedia(doc.id, updatedMedia);
-  return {
-    ...doc,
-    media: updatedMedia
-  };
-};
-
 export async function handleGetMediaByToken(ctx) {
   const {access_token} = ctx.req.query;
   const media = await instagram.getMediaByAccessToken(access_token);
 
   return (ctx.body = {data: media.data});
-}
-
-export async function handleReFresh(ctx) {
-  const {token} = ctx.req.query;
-  const shopId = getCurrentShop(ctx);
-
-  const media = await getMedia(shopId);
-
-  if (media.flatMap(item => item.media).some(item => isExpired(item))) {
-    await Promise.all(
-      media.map(async doc => (doc.media.find(isExpired) ? await updateDoc(doc, token) : doc))
-    );
-  }
-
-  return (ctx.body = {success: true});
 }
 
 export async function handleGetMedia(ctx) {
