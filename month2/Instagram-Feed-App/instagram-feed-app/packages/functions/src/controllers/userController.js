@@ -1,36 +1,39 @@
-import {getSettings, setSettings, deleteSettings} from '../repositories/settingRepository';
+import {getSettings, setSettings, syncSettings} from '../repositories/settingRepository';
 import {getMedia, syncMedia, deleteMedia} from '../repositories/mediaRepository';
 import {docSize} from '../const/firestore';
 import chunkArray from '../helpers/utils/chunkArray';
 import {getCurrentShop} from '../helpers/auth';
 import sortByTimeStamp from '../helpers/utils/sortByTimeStamp';
 import Instagram from '../helpers/instagram';
+import {setUser} from '../repositories/userRepository';
 
 const instagram = new Instagram();
 
 export async function handleAuth(ctx) {
   const {code, state: shopId} = ctx.query;
 
-  const token = await instagram.getTokenByCode(code);
+  const resp = await instagram.getTokenByCode(code);
+  const longLivedTokens = await instagram.getLongLivedTokens(resp.access_token);
 
   const [user, media] = await Promise.all([
-    instagram.getUserByAccessToken(token.access_token),
-    instagram.getMediaByAccessToken(token.access_token)
+    instagram.getUserByAccessToken(longLivedTokens),
+    instagram.getMediaByAccessToken(longLivedTokens)
   ]);
 
-  await setSettings({...user, shopId});
-  await syncMedia(chunkArray(media.data, docSize), shopId);
+  await Promise.all([
+    syncSettings({...user, shopId}),
+    syncMedia(chunkArray(media.data, docSize), shopId),
+    setUser({...user, shopId})
+  ]);
 
   return (ctx.body = 'Close this window and refresh the page');
 }
 
 export async function handleLogout(ctx) {
   const shopId = getCurrentShop(ctx);
-  const [user, media] = await Promise.all([deleteMedia(shopId), deleteSettings(shopId)]);
+  await deleteMedia(shopId);
 
-  return (ctx.body = {
-    data: {user, media}
-  });
+  return (ctx.body = {success: true});
 }
 
 export async function handleGetAccount(ctx) {

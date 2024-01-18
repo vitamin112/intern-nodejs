@@ -1,5 +1,6 @@
 import {Firestore} from '@google-cloud/firestore';
 import {settings} from '../const/settings';
+
 const firestore = new Firestore();
 /** @type CollectionReference */
 const settingRef = firestore.collection('settings');
@@ -49,7 +50,7 @@ export async function deleteSettings(shopId) {
 
 export async function syncSettings(data) {
   try {
-    await settingRef.doc(data.id).set({...settings, ...data});
+    await settingRef.doc(data.shopId).update({accessToken: data.accessToken, lastSync: Date.now()});
     return {success: true};
   } catch (error) {
     console.log(error);

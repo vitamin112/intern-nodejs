@@ -35,6 +35,23 @@ class Instagram {
 
   /**
    * @param {string} access_token
+   * @return {Promise<string>} access_token
+   */
+  getLongLivedTokens(access_token) {
+    try {
+      return axios
+        .get(
+          `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${this.client_secret}&access_token=${access_token}`
+        )
+        .then(resp => resp?.data?.access_token);
+    } catch (error) {
+      console.log(error);
+      return {};
+    }
+  }
+
+  /**
+   * @param {string} access_token
    * @return {Promise<object>} user
    */
   getUserByAccessToken(access_token) {

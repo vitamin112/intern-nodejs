@@ -7,7 +7,7 @@ const userRef = firestore.collection('user');
 
 export async function setUser(data) {
   try {
-    await userRef.doc(data.id).set(data);
+    await userRef.doc(data.id).set({...data, updatedAt: Date.now()});
     return {success: true};
   } catch (error) {
     console.log(error);
