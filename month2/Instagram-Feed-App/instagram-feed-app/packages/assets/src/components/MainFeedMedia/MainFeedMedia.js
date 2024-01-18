@@ -5,12 +5,14 @@ import {HideMinor, ViewMinor} from '@shopify/polaris-icons';
 
 const MainFeedMedia = ({
   data = [],
-  handelSelectedItem = () => {},
   settings = {},
-  isPreview = false
+  isPreview = false,
+  handelSelectedItem = () => {}
 }) => {
   const {numOfRow = 2, numOfColumn = 3, spacing = 10, title = ''} = settings;
   const [displayItem, setDisplayItem] = useState([]);
+
+  const [numberItemToShow, setNumberItemToShow] = useState(4);
 
   function formatDate(inputDate) {
     const date = new Date(inputDate);
@@ -24,16 +26,18 @@ const MainFeedMedia = ({
 
     return `${day}-${month}-${year}`;
   }
+  useEffect(() => {
+    setNumberItemToShow(settings?.numOfRow * settings?.numOfColumn);
+  }, [settings]);
 
-  const totalItems = numOfRow * numOfColumn;
-
-  const loadMoreItems = useCallback(() => {
-    setDisplayItem(prev => [...prev, ...data.slice(prev.length, prev.length + totalItems)]);
-  }, [data, totalItems]);
+  const loadMoreItems = () => {
+    setDisplayItem(data.slice(0, numberItemToShow + numOfRow * numOfColumn));
+    setNumberItemToShow(prev => prev + numberItemToShow);
+  };
 
   useEffect(() => {
-    setDisplayItem(data ? data.slice(0, totalItems) : []);
-  }, [data, totalItems]);
+    setDisplayItem(data ? data.slice(0, numberItemToShow) : []);
+  }, [data, settings, numberItemToShow]);
 
   return (
     <div className={`Avava-SP__Wrapper fadeInUp animated ${settings.position}`}>

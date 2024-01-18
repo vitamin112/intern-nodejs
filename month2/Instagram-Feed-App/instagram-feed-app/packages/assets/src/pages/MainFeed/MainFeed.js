@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, ButtonGroup, Card, Layout, Page} from '@shopify/polaris';
 import {DesktopMajor, MobileMajor, ToggleMinor} from '@shopify/polaris-icons';
 import MainFeedMedia from '../../components/MainFeedMedia/MainFeedMedia';
@@ -24,8 +24,6 @@ export default function MainFeed() {
     defaultData: {}
   });
   const {handleEdit, editing} = useEditApi({url: '/updateMedia'});
-
-  const {settings, media} = data;
 
   const handleChangeScreen = () => {
     setPreviewScreen(previewScreen === 'mobile' ? 'desktop' : 'mobile');
@@ -69,7 +67,7 @@ export default function MainFeed() {
       <Layout>
         <Layout.Section oneThird>
           <UserSection data={data} loading={loading} setData={setData} successCallback={fetchApi} />
-          <SettingSection settings={settings} setData={setData} />
+          <SettingSection settings={data?.settings} setData={setData} />
           <Card title="Add to theme">
             <Card.Section>
               <Button disabled fullWidth>
@@ -87,9 +85,9 @@ export default function MainFeed() {
               <div className={previewScreen}>
                 <div className="content">
                   <MainFeedMedia
-                    data={media}
+                    data={data?.media}
                     handelSelectedItem={handelSelectedItem}
-                    settings={settings || defaultSettings}
+                    settings={data?.settings || defaultSettings}
                     isPreview={true}
                   />
                 </div>
